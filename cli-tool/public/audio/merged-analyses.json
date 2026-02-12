@@ -1,0 +1,295 @@
+{
+  "createdAt": "2026-01-07T17:09:26.919Z",
+  "analyses": [
+    {
+      "file": "Perfekte Welle (SARIAN Remix)-analysis.json",
+      "content": {
+        "schemaVersion": 15,
+        "descriptiveTitle": "Die Perfekte Welle (Hands Up Remix)",
+        "descriptiveTags": [
+          "Hands Up",
+          "Eurodance",
+          "German Pop",
+          "High Energy",
+          "Uplifting",
+          "Nostalgic",
+          "Female Vocals",
+          "Electronic",
+          "Dancefloor Anthem",
+          "Synthesizer Lead",
+          "Club Hit",
+          "2000s Style",
+          "Driving Rhythm",
+          "Euphoric Atmosphere"
+        ],
+        "summary": "A high-energy Hands Up remix of Juli's 'Die Perfekte Welle'. Blending 2000s German pop nostalgia with 142 BPM Eurodance production, it features euphoric synth leads and anthemic female vocals, making it a peak-time club staple for high-energy dance floors.",
+        "genres": {
+          "primary": [
+            "Hands Up",
+            "Eurodance"
+          ],
+          "secondary": [
+            "German Pop",
+            "Electronic"
+          ],
+          "influences": [
+            "Juli",
+            "Cascada",
+            "Rocco",
+            "Starsplash"
+          ]
+        },
+        "moodsAndFeelings": {
+          "moods": [
+            "Uplifting",
+            "Energetic",
+            "Euphoric"
+          ],
+          "valence": "Very Positive",
+          "vibes": [
+            "Peak-Time Club",
+            "Festival Mainstage",
+            "Nostalgic Party"
+          ],
+          "emotions": [
+            "Joy",
+            "Excitement",
+            "Optimism"
+          ],
+          "energy": "Very High",
+          "energyScore": 0.95,
+          "danceability": "Extremely Danceable",
+          "danceabilityScore": 0.98
+        },
+        "compositionAndProduction": {
+          "rhythmicComplexityLevel": "Low",
+          "rhythmicFeel": "Driving/Energetic",
+          "melodicComplexityLevel": "Simple",
+          "harmonicSystem": "Diatonic",
+          "harmonicComplexityLevel": "Simple",
+          "productionStyle": "Modern Polished",
+          "timbreDescriptors": [
+            "Bright Synths",
+            "Punchy Kick",
+            "Clear Vocals",
+            "Sizzling Hi-Hats"
+          ],
+          "sonicTexture": [
+            "Dense",
+            "Pulsating",
+            "Layered"
+          ]
+        },
+        "instrumentation": {
+          "instrumentationType": "Mostly Electronic",
+          "leadInstruments": [
+            "Synthesizer",
+            "Female Vocals"
+          ],
+          "detectedInstruments": [
+            {
+              "name": "Synthesizer",
+              "prominence": "Primary",
+              "role": "Lead"
+            },
+            {
+              "name": "Kick Drum",
+              "prominence": "Primary",
+              "role": "Rhythm"
+            },
+            {
+              "name": "Female Vocals",
+              "prominence": "Primary",
+              "role": "Melody"
+            },
+            {
+              "name": "Bass Synth",
+              "prominence": "Secondary",
+              "role": "Bass"
+            }
+          ]
+        },
+        "vocals": {
+          "vocalPresence": "Vocals Present",
+          "vocalTypes": [
+            "Female Lead"
+          ],
+          "lyricalLanguages": [
+            {
+              "code": "de",
+              "name": "German",
+              "prominence": 1
+            }
+          ],
+          "lyricalThemes": [
+            "Opportunity",
+            "Self-belief",
+            "Surfing",
+            "Momentum"
+          ],
+          "explicitContent": false,
+          "sampleSources": [
+            "Juli - Die Perfekte Welle"
+          ]
+        },
+        "mixing": {
+          "bpm": 142,
+          "musicalKey": "9B",
+          "musicalMode": "Major",
+          "timeSignature": "4/4",
+          "mixabilityScore": 0.95,
+          "commercialAppealScore": 0.88,
+          "suitableOccasions": [
+            "Club Night",
+            "Festival",
+            "Themed Party"
+          ],
+          "suitableMixRoles": [
+            "Peak-Time Banger",
+            "Energy Builder"
+          ],
+          "introMixingNotes": "Straight 4/4 drum intro makes it very easy to beatmatch. Vocals enter after a standard 16-bar phrase.",
+          "outroMixingNotes": "Clean percussive outro, ideal for a long crossfade into another high-energy dance track.",
+          "suggestedCuePoints": [],
+          "songStructureSegments": []
+        }
+      }
+    },
+    {
+      "file": "dance-loop-analysis.json",
+      "content": {
+        "schemaVersion": 15,
+        "descriptiveTitle": "High-Octane Drum & Bass Loop",
+        "descriptiveTags": [
+          "Drum & Bass",
+          "Electronic",
+          "High Energy",
+          "Fast-Paced",
+          "Breakbeat",
+          "Bright Synths",
+          "Punchy Snare",
+          "Driving Bass",
+          "Club",
+          "Dance",
+          "Upbeat",
+          "Rhythmic",
+          "Modern",
+          "Intense",
+          "Loopable",
+          "Adrenaline",
+          "175 BPM",
+          "Synthetic",
+          "Polished",
+          "Perpetual"
+        ],
+        "summary": "A high-energy Drum & Bass loop featuring a driving 175 BPM breakbeat, punchy snare, and bright, rhythmic synth leads. Ideal for maintaining peak-time intensity or as a transition tool in fast-paced sets.",
+        "genres": {
+          "primary": [
+            "Drum & Bass"
+          ],
+          "secondary": [
+            "Jump Up",
+            "EDM"
+          ],
+          "influences": [
+            "Pendulum",
+            "Sub Focus",
+            "Netsky"
+          ]
+        },
+        "moodsAndFeelings": {
+          "moods": [
+            "Energetic",
+            "Driving",
+            "Uplifting"
+          ],
+          "valence": "Positive",
+          "vibes": [
+            "Fast-Paced Dance Floor",
+            "Workout",
+            "Action Sequence"
+          ],
+          "emotions": [
+            "Excitement",
+            "Adrenaline"
+          ],
+          "energy": "Very High",
+          "energyScore": 0.95,
+          "danceability": "Extremely Danceable",
+          "danceabilityScore": 0.92
+        },
+        "compositionAndProduction": {
+          "rhythmicComplexityLevel": "Medium",
+          "rhythmicFeel": "Driving/Energetic",
+          "melodicComplexityLevel": "Simple",
+          "harmonicSystem": "Diatonic",
+          "harmonicComplexityLevel": "Simple",
+          "productionStyle": "Modern Polished",
+          "timbreDescriptors": [
+            "Punchy Snare",
+            "Bright Synth",
+            "Aggressive Bass"
+          ],
+          "sonicTexture": [
+            "Dense",
+            "Layered"
+          ]
+        },
+        "instrumentation": {
+          "instrumentationType": "Fully Electronic",
+          "leadInstruments": [
+            "Synth Lead",
+            "Synth Bass"
+          ],
+          "detectedInstruments": [
+            {
+              "name": "Electronic Drums",
+              "prominence": "Primary",
+              "role": "Rhythm"
+            },
+            {
+              "name": "Synth Bass",
+              "prominence": "Primary",
+              "role": "Bass"
+            },
+            {
+              "name": "Synth Lead",
+              "prominence": "Secondary",
+              "role": "Melody"
+            }
+          ]
+        },
+        "vocals": {
+          "vocalPresence": "Instrumental",
+          "vocalTypes": [],
+          "lyricalLanguages": [],
+          "lyricalThemes": [],
+          "explicitContent": false,
+          "sampleSources": []
+        },
+        "mixing": {
+          "bpm": 175,
+          "musicalKey": "4A",
+          "musicalMode": "Minor",
+          "timeSignature": "4/4",
+          "mixabilityScore": 0.85,
+          "commercialAppealScore": 0.7,
+          "suitableOccasions": [
+            "Club Night",
+            "Gym Session",
+            "High-Intensity Event"
+          ],
+          "suitableMixRoles": [
+            "Energy Builder",
+            "Peak-Time Banger",
+            "Tool/FX Loop"
+          ],
+          "introMixingNotes": "High energy from the start; easiest to blend with other Drum & Bass tracks sharing a consistent breakbeat rhythm.",
+          "outroMixingNotes": "Hard cut or loop out recommended as the energy is sustained throughout the snippet.",
+          "suggestedCuePoints": [],
+          "songStructureSegments": []
+        }
+      }
+    }
+  ]
+}

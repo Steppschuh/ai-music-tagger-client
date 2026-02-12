@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 15,
+  "descriptiveTitle": "Die Perfekte Welle (Hands Up Remix)",
+  "descriptiveTags": [
+    "Hands Up",
+    "Eurodance",
+    "German Pop",
+    "High Energy",
+    "Uplifting",
+    "Nostalgic",
+    "Female Vocals",
+    "Electronic",
+    "Dancefloor Anthem",
+    "Synthesizer Lead",
+    "Club Hit",
+    "2000s Style",
+    "Driving Rhythm",
+    "Euphoric Atmosphere"
+  ],
+  "summary": "A high-energy Hands Up remix of Juli's 'Die Perfekte Welle'. Blending 2000s German pop nostalgia with 142 BPM Eurodance production, it features euphoric synth leads and anthemic female vocals, making it a peak-time club staple for high-energy dance floors.",
+  "genres": {
+    "primary": [
+      "Hands Up",
+      "Eurodance"
+    ],
+    "secondary": [
+      "German Pop",
+      "Electronic"
+    ],
+    "influences": [
+      "Juli",
+      "Cascada",
+      "Rocco",
+      "Starsplash"
+    ]
+  },
+  "moodsAndFeelings": {
+    "moods": [
+      "Uplifting",
+      "Energetic",
+      "Euphoric"
+    ],
+    "valence": "Very Positive",
+    "vibes": [
+      "Peak-Time Club",
+      "Festival Mainstage",
+      "Nostalgic Party"
+    ],
+    "emotions": [
+      "Joy",
+      "Excitement",
+      "Optimism"
+    ],
+    "energy": "Very High",
+    "energyScore": 0.95,
+    "danceability": "Extremely Danceable",
+    "danceabilityScore": 0.98
+  },
+  "compositionAndProduction": {
+    "rhythmicComplexityLevel": "Low",
+    "rhythmicFeel": "Driving/Energetic",
+    "melodicComplexityLevel": "Simple",
+    "harmonicSystem": "Diatonic",
+    "harmonicComplexityLevel": "Simple",
+    "productionStyle": "Modern Polished",
+    "timbreDescriptors": [
+      "Bright Synths",
+      "Punchy Kick",
+      "Clear Vocals",
+      "Sizzling Hi-Hats"
+    ],
+    "sonicTexture": [
+      "Dense",
+      "Pulsating",
+      "Layered"
+    ]
+  },
+  "instrumentation": {
+    "instrumentationType": "Mostly Electronic",
+    "leadInstruments": [
+      "Synthesizer",
+      "Female Vocals"
+    ],
+    "detectedInstruments": [
+      {
+        "name": "Synthesizer",
+        "prominence": "Primary",
+        "role": "Lead"
+      },
+      {
+        "name": "Kick Drum",
+        "prominence": "Primary",
+        "role": "Rhythm"
+      },
+      {
+        "name": "Female Vocals",
+        "prominence": "Primary",
+        "role": "Melody"
+      },
+      {
+        "name": "Bass Synth",
+        "prominence": "Secondary",
+        "role": "Bass"
+      }
+    ]
+  },
+  "vocals": {
+    "vocalPresence": "Vocals Present",
+    "vocalTypes": [
+      "Female Lead"
+    ],
+    "lyricalLanguages": [
+      {
+        "code": "de",
+        "name": "German",
+        "prominence": 1
+      }
+    ],
+    "lyricalThemes": [
+      "Opportunity",
+      "Self-belief",
+      "Surfing",
+      "Momentum"
+    ],
+    "explicitContent": false,
+    "sampleSources": [
+      "Juli - Die Perfekte Welle"
+    ]
+  },
+  "mixing": {
+    "bpm": 142,
+    "musicalKey": "9B",
+    "musicalMode": "Major",
+    "timeSignature": "4/4",
+    "mixabilityScore": 0.95,
+    "commercialAppealScore": 0.88,
+    "suitableOccasions": [
+      "Club Night",
+      "Festival",
+      "Themed Party"
+    ],
+    "suitableMixRoles": [
+      "Peak-Time Banger",
+      "Energy Builder"
+    ],
+    "introMixingNotes": "Straight 4/4 drum intro makes it very easy to beatmatch. Vocals enter after a standard 16-bar phrase.",
+    "outroMixingNotes": "Clean percussive outro, ideal for a long crossfade into another high-energy dance track.",
+    "suggestedCuePoints": [],
+    "songStructureSegments": []
+  }
+}
