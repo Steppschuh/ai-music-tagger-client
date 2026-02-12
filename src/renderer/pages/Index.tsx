@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AppHeader } from "@/components/tagger/AppHeader";
 import { DropZone } from "@/components/tagger/DropZone";
 import { FileQueueList } from "@/components/tagger/FileQueueList";
 import { StatusBar } from "@/components/tagger/StatusBar";
@@ -49,13 +48,9 @@ const Index = () => {
       : "READY";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-lg overflow-hidden rounded-lg border border-border bg-card shadow-2xl shadow-primary/5">
-        {/* Header */}
-        <AppHeader onSettingsClick={() => setSettingsOpen(true)} />
-
-        {/* Main content area */}
-        <div className="p-5">
+    <div className="flex min-h-screen w-full flex-col bg-background">
+      {/* Main content area */}
+      <div className="min-h-0 flex-1 overflow-auto p-4 md:p-6">
           {view === "start" && (
             <>
               <DropZone onFilesAdded={addFiles} />
@@ -90,11 +85,14 @@ const Index = () => {
           {view === "results" && (
             <ResultsView files={files} onClear={handleNewBatch} settings={settings} />
           )}
-        </div>
-
-        {/* Status bar */}
-        <StatusBar status={statusLabel} percentage={percentage} />
       </div>
+
+      {/* Status bar */}
+      <StatusBar
+        status={statusLabel}
+        percentage={percentage}
+        onSettingsClick={() => setSettingsOpen(true)}
+      />
 
       {/* Settings dialog */}
       <SettingsPanel

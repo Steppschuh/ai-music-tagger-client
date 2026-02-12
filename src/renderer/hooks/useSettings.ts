@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import type { SettingsState } from "@/types/tagger";
+import { toUserMessage } from "@/lib/errorMessages";
 
 const DEFAULT_SETTINGS: SettingsState = {
   rapidApiKey: "",
@@ -13,10 +15,16 @@ export function useSettings() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.api) {
-      window.api.getSettings().then((s) => {
-        setSettings({ ...DEFAULT_SETTINGS, ...s });
-        setLoaded(true);
-      });
+      window.api
+        .getSettings()
+        .then((s) => {
+          setSettings({ ...DEFAULT_SETTINGS, ...s });
+          setLoaded(true);
+        })
+        .catch((err) => {
+          toast.error(`Failed to load settings: ${toUserMessage(err)}`);
+          setLoaded(true);
+        });
     } else {
       setLoaded(true);
     }

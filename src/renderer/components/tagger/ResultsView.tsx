@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { RotateCcw, Zap, Music2, Gauge, KeyRound, Palette, Layers, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -6,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import type { QueuedFile, SettingsState } from "@/types/tagger";
 import type { AnalysisResult } from "../../../shared/types";
 import { writeTagsFromAnalysis } from "@/services/taggerService";
+import { toUserMessage } from "@/lib/errorMessages";
 
 function tagStrategyToMergeStrategy(s: SettingsState["tagStrategy"]): string {
   const map: Record<SettingsState["tagStrategy"], string> = {
@@ -42,8 +44,9 @@ export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
     setWritingId(file.id);
     try {
       await writeTagsFromAnalysis(file.filePath, file.result, mergeStrategy);
+      toast.success(`Tags written to ${file.name}`);
     } catch (err) {
-      console.error("Failed to write tags:", err);
+      toast.error(`Failed to write tags to ${file.name}: ${toUserMessage(err)}`);
     } finally {
       setWritingId(null);
     }
