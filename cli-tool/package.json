@@ -21,7 +21,7 @@
     "tagging"
   ],
   "author": "Steppschuh",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "dependencies": {
     "@google-cloud/vertexai": "^0.1.0",
     "busboy": "^1.6.0",
