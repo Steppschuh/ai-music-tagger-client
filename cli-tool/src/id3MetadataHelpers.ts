@@ -190,6 +190,20 @@ export function createTXXXFields(
     addTXXXField(txxx, "Outro Notes", analysis.mixing.outroMixingNotes);
   }
 
+  // Section summaries
+  if (analysis.genres?.summary) {
+    addTXXXField(txxx, "Genres Summary", analysis.genres.summary);
+  }
+  if (analysis.moodsAndFeelings?.summary) {
+    addTXXXField(txxx, "Moods Summary", analysis.moodsAndFeelings.summary);
+  }
+  if (analysis.instrumentation?.summary) {
+    addTXXXField(txxx, "Instrumentation Summary", analysis.instrumentation.summary);
+  }
+  if (analysis.vocals?.summary) {
+    addTXXXField(txxx, "Vocals Summary", analysis.vocals.summary);
+  }
+
   // Genres
   if (analysis.genres?.secondary?.length > 0) {
     addTXXXField(
@@ -345,6 +359,22 @@ export function createTXXXFields(
       "Song Structure",
       JSON.stringify(analysis.mixing.songStructureSegments)
     );
+  }
+
+  // Stems analysis (V17)
+  if (analysis.stems) {
+    if (analysis.stems.drums?.summary) {
+      addTXXXField(txxx, "Stems: Drums", analysis.stems.drums.summary);
+    }
+    if (analysis.stems.bass?.summary) {
+      addTXXXField(txxx, "Stems: Bass", analysis.stems.bass.summary);
+    }
+    if (analysis.stems.vocals?.summary) {
+      addTXXXField(txxx, "Stems: Vocals", analysis.stems.vocals.summary);
+    }
+    if (analysis.stems.other?.summary) {
+      addTXXXField(txxx, "Stems: Other", analysis.stems.other.summary);
+    }
   }
 
   // Schema version

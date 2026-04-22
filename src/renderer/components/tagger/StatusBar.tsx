@@ -10,7 +10,7 @@ interface StatusBarProps {
 
 export function StatusBar({ status, percentage, onSettingsClick }: StatusBarProps) {
   return (
-    <div className="flex items-center gap-3 border-t border-border bg-card-header px-4 py-2">
+    <div className="flex items-center gap-3 bg-card-header px-4 py-2">
       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
         {status}
       </span>

@@ -1,10 +1,11 @@
 /**
- * TypeScript types for AI Music Tagger response schema (v15)
+ * TypeScript types for AI Music Tagger response schema (v20)
  * These types match the JSON schema defined in backend/response.schema.json
  */
 
 export interface AnalysisResult {
   schemaVersion: number;
+  analysisMetaData: AnalysisMetaData;
   descriptiveTitle: string;
   descriptiveTags: string[];
   summary: string;
@@ -14,15 +15,31 @@ export interface AnalysisResult {
   instrumentation: Instrumentation;
   vocals: Vocals;
   mixing: Mixing;
+  /** V17: Subjective 4-stem performance analysis. */
+  stems: Stems;
+}
+
+/** Analysis metadata for auditing and library management over time. */
+export interface AnalysisMetaData {
+  /** ISO-8601 UTC timestamp of when the analysis ran. */
+  analysisTimestamp: string;
+  /** Aggregate AI confidence (0.0-1.0). Below 0.5 flags the track for human review. */
+  overallConfidenceScore: number;
+  /** Original filename of the audio file. Injected by the backend after analysis. */
+  filename?: string;
+  /** SHA-256 hash for deduplication. Injected by the backend after analysis. */
+  fileHash?: string;
 }
 
 export interface Genres {
+  summary: string;
   primary: string[];
   secondary: string[];
   influences: string[];
 }
 
 export interface MoodsAndFeelings {
+  summary: string;
   moods: string[];
   // Enum in schema
   valence:
@@ -128,6 +145,7 @@ export interface CompositionAndProduction {
 }
 
 export interface Instrumentation {
+  summary: string;
   // Enum in schema
   instrumentationType:
     | "Fully Acoustic"
@@ -161,6 +179,7 @@ export interface DetectedInstrument {
 }
 
 export interface Vocals {
+  summary: string;
   // Enum in schema
   vocalPresence:
     | "Instrumental"
@@ -172,7 +191,13 @@ export interface Vocals {
   lyricalLanguages: LyricalLanguage[];
   lyricalThemes: string[];
   explicitContent: boolean;
+  /** V20: Contains profane content beyond general explicit tagging. */
+  containsProfanity: boolean;
+  /** V20: Categories of profane content. Empty array when containsProfanity is false. */
+  profanityTypes: ("Violence" | "Drugs" | "Swearing" | "Sexual" | "Hate Speech")[];
   sampleSources: string[];
+  /** Vocal density (0.0-1.0). High values = heavy vocal presence; avoid layering over another vocal-heavy track. */
+  vocalDensity: number;
 }
 
 export interface LyricalLanguage {
@@ -197,8 +222,24 @@ export interface Mixing {
     | "Ionian"
     | "Unknown";
   timeSignature: string;
+  /** V20: Track phrasing grid. "Standard 32-Beat Phrasing" is Sync-safe. */
+  phrasingType:
+    | "Standard 32-Beat Phrasing"
+    | "Odd Phrasing"
+    | "Free-Form"
+    | "Unknown";
+  /** V20: Tempo stability. "Quantized" = Sync-safe; "Variable" = live feel; "BPM Transition" = deliberate shift. */
+  tempoType: "Quantized" | "Variable" | "BPM Transition" | "Unknown";
   mixabilityScore: number;
   commercialAppealScore: number;
+  /** V19: Predicted stem separation quality (0.0-1.0). High = clean separation. */
+  stemSeparationSuitability: number;
+  /** V19: True if instrumental sections can safely host a foreign acapella. */
+  isAcapellaCompatible: boolean;
+  /** V19: True if intro is percussion-only with no harmonic content to clash with an outgoing key. */
+  hasCleanIntro: boolean;
+  /** V19: True if the track structure supports a simultaneous double-drop technique. */
+  isDoubleDropFriendly: boolean;
   suitableOccasions: string[];
   // Enum in schema (array items)
   suitableMixRoles: (
@@ -220,12 +261,27 @@ export interface Mixing {
   outroMixingNotes: string;
   suggestedCuePoints: CuePoint[];
   songStructureSegments: SongStructureSegment[];
+  /** Broad EQ characteristics for frequency-complementary track pairing. */
+  frequencyProfile: FrequencyProfile;
+  /** Drop intensity vs. intro (0.0-1.0). High = explosive drop; low = steady continuation. */
+  dropIntensityScore: number;
+  /** Expected dancefloor effect when this track is played. */
+  crowdEnergyShift:
+    | "Floor-filler"
+    | "Breather"
+    | "Room-clearer"
+    | "Warm-up Friendly"
+    | "Peak-Time Essential"
+    | "Journey Track"
+    | "Unknown";
 }
 
 export interface CuePoint {
   positionSeconds: number;
   positionBeats: number;
   positionBars: number;
+  /** Cue point type for DJ software API mapping. Renamed from `type` to avoid SDK conflicts. */
+  cueType: "Load" | "Mix-In" | "Mix-Out" | "Vocal-In" | "Drop" | "General";
   label: string;
 }
 
@@ -246,4 +302,108 @@ export interface SongStructureSegment {
     | "Peak"
     | "Dip"
     | "Static";
+}
+
+export interface FrequencyProfile {
+  dominantFrequencyRange:
+    | "Sub-Heavy"
+    | "Bass-Forward"
+    | "Mid-Forward"
+    | "High-Mid Present"
+    | "Treble-Bright"
+    | "Piercing Highs"
+    | "Balanced"
+    | "Unknown";
+}
+
+/**
+ * V17: Confidence-scored stem attribute.
+ * confidence is a float 0.0–1.0 indicating prediction certainty.
+ */
+export interface StemAttribute<T extends string> {
+  value: T;
+  /** Confidence score for this prediction (0.0 = uncertain, 1.0 = highly confident). */
+  confidence: number;
+}
+
+/** V17: Subjective performance analysis of the drums stem. */
+export interface DrumsStem {
+  summary: string;
+  movement: StemAttribute<
+    | "Straight"
+    | "Stomping"
+    | "Shuffling"
+    | "Bouncy"
+    | "Rolling"
+    | "Broken"
+    | "Flowing"
+    | "Static"
+  >;
+  /** Level of compression vs. human expression. */
+  dynamics: StemAttribute<
+    "Compressed" | "Punchy" | "Natural" | "Thin"
+  >;
+  transientProfile: StemAttribute<
+    "Rounded" | "Punchy" | "Clicky" | "Harsh"
+  >;
+  functionalRole: StemAttribute<
+    "Foundation" | "Tool" | "Breakbeat" | "Accent"
+  >;
+}
+
+/** V17: Subjective performance analysis of the bass stem. */
+export interface BassStem {
+  summary: string;
+  weight: StemAttribute<
+    "Sub" | "Massive" | "Growl" | "Plucky"
+  >;
+  movement: StemAttribute<
+    "Driving" | "Rolling" | "Pulsating" | "Walking" | "Syncopated" | "Drone"
+  >;
+  /** Pumping effect essential for matching club grooves. */
+  sidechainFeel: StemAttribute<
+    "None" | "Subtle" | "Pumping" | "Extreme"
+  >;
+}
+
+/** V17: Subjective performance analysis of the vocals stem. */
+export interface VocalsStem {
+  summary: string;
+  performanceStyle: StemAttribute<
+    | "Monotone"
+    | "Expressive"
+    | "Aggressive"
+    | "Breathy"
+    | "Whispered"
+    | "Spoken"
+  >;
+  spatialDepth: StemAttribute<
+    "Close" | "Ambient" | "Wide" | "Dry"
+  >;
+  presenceLevel: StemAttribute<
+    "Background" | "Supporting" | "Co-Lead" | "Lead"
+  >;
+}
+
+/** V17: Subjective performance analysis of the other (melodic) stem. */
+export interface OtherStem {
+  summary: string;
+  aestheticWeight: StemAttribute<
+    "Airy" | "Neutral" | "Dense" | "Massive"
+  >;
+  articulation: StemAttribute<
+    "Sustained" | "Percussive" | "Evolving" | "Stabs" | "Glitchy"
+  >;
+  /** Primary frequency focus to help avoid mix clashing. */
+  spectralEmphasis: StemAttribute<
+    "Warm" | "Forward" | "Shimmer" | "Lo-Fi"
+  >;
+}
+
+/** V17: 4-stem subjective analysis model for advanced curation and visual triggers. */
+export interface Stems {
+  drums: DrumsStem;
+  bass: BassStem;
+  vocals: VocalsStem;
+  other: OtherStem;
 }

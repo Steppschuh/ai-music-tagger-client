@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropZone } from "@/components/tagger/DropZone";
-import { FileQueueList } from "@/components/tagger/FileQueueList";
 import { StatusBar } from "@/components/tagger/StatusBar";
 import { ProcessingView } from "@/components/tagger/ProcessingView";
 import { ResultsView } from "@/components/tagger/ResultsView";
@@ -34,6 +33,7 @@ const Index = () => {
     startProcessing,
     stopProcessing,
     resetToStart,
+    totalToProcess,
   } = useProcessing({ files, updateFile, autoSaveJson: settings.autoSaveJson });
 
   const handleNewBatch = () => {
@@ -54,20 +54,6 @@ const Index = () => {
           {view === "start" && (
             <>
               <DropZone onFilesAdded={addFiles} />
-              <FileQueueList
-                files={files}
-                onRemove={removeFile}
-                disabled={isProcessing}
-              />
-              {files.length > 0 && (
-                <Button
-                  className="mt-4 w-full"
-                  onClick={startProcessing}
-                  disabled={pendingCount === 0}
-                >
-                  Process {pendingCount} file{pendingCount !== 1 ? "s" : ""}
-                </Button>
-              )}
             </>
           )}
 
@@ -87,12 +73,28 @@ const Index = () => {
           )}
       </div>
 
-      {/* Status bar */}
-      <StatusBar
-        status={statusLabel}
-        percentage={percentage}
-        onSettingsClick={() => setSettingsOpen(true)}
-      />
+      {/* Footer sticky at the bottom */}
+      <footer className="border-t border-border bg-card-header transition-all duration-300 ease-in-out">
+        <StatusBar
+          status={statusLabel}
+          percentage={percentage}
+          onSettingsClick={() => setSettingsOpen(true)}
+        />
+        <div className="px-4 pb-4">
+          <Button
+            className="w-full shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+            size="lg"
+            onClick={startProcessing}
+            disabled={pendingCount === 0 || isProcessing || view === "results"}
+          >
+            {isProcessing 
+              ? `Processing ${currentIndex + 1} of ${totalToProcess}...`
+              : pendingCount > 0
+                ? `Process ${pendingCount} file${pendingCount !== 1 ? "s" : ""}`
+                : "Select files to process"}
+          </Button>
+        </div>
+      </footer>
 
       {/* Settings dialog */}
       <SettingsPanel

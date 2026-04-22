@@ -277,19 +277,6 @@ The generated `merged-analyses.json` file has the following structure:
 }
 ```
 
-**Example output:**
-
-```
-Found 3 analysis file(s) to process.
-
-Processing: dance-loop-analysis.json
-Processing: Perfekte Welle (SARIAN Remix)-analysis.json
-Processing: Afterparty-analysis.json
-
-Processed 3 analysis file(s)
-Merged analyses written to: /path/to/public/audio/merged-analyses.json
-```
-
 ## Development
 
 ### Building
