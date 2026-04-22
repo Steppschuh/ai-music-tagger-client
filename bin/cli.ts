@@ -1,9 +1,10 @@
 /**
- * CLI entry point for the ai-music-tagger CLI tool.
- * Now delegates to the shared service layer from the parent Electron project.
+ * CLI entry point for AI Music Tagger.
+ * Imports core logic from the shared service layer used by the Electron GUI.
  *
- * For development:  ts-node --esm src/index.ts --audio ./song.mp3
- * For production:   Use bin/cli.ts from the root Electron project instead.
+ * Usage:
+ *   node bin/cli.js --audio /path/to/song.mp3 [options]
+ *   node bin/cli.js --audio /path/to/folder/ --update-metadata
  */
 
 import {
@@ -15,22 +16,21 @@ import {
   findAudioFiles,
   transformAnalysisToMetadata,
   mergeMetadata,
-} from "../../src/services/musicTaggerService.js";
-import type { MergeStrategy, CommentStrategy } from "../../src/shared/types.js";
-import { formatMetadataForLog } from "../../src/services/id3MetadataHelpers.js";
+} from "../src/services/musicTaggerService";
+import type { MergeStrategy, CommentStrategy } from "../src/shared/types";
+import { formatMetadataForLog } from "../src/services/id3MetadataHelpers";
 import * as fs from "fs";
 import * as path from "path";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
-import yargs from "yargs/yargs";
-
-// Common audio file extensions (case-insensitive)
 interface ProcessResult {
   success: boolean;
   file: string;
   error?: string;
 }
 
-const argv = yargs(process.argv.slice(2))
+const argv = yargs(hideBin(process.argv))
   .option("audio", {
     alias: "a",
     description: "Path to the audio file or directory",
@@ -65,30 +65,31 @@ const argv = yargs(process.argv.slice(2))
     default: "tags+summary",
   })
   .help()
-  .parse();
+  .parseSync();
 
 /**
  * Processes a single audio file (analysis or metadata update)
  */
 async function processAudioFile(
   audioPath: string,
-  args: any
+  updateMetadataFlag: boolean,
+  prompt: string | undefined,
+  mergeStrategy: MergeStrategy,
+  commentStrategy: CommentStrategy
 ): Promise<void> {
-  if (args["update-metadata"]) {
+  if (updateMetadataFlag) {
     // Update metadata workflow
-    // Check if analysis file exists, if not, run analysis first
     let analysis = await readAnalysisFromFile(audioPath);
 
     if (!analysis) {
       console.log(
         `Analysis file not found for ${audioPath}. Running analysis first...`
       );
-      analysis = await analyzeSong(audioPath, args.prompt);
+      analysis = await analyzeSong(audioPath, prompt);
       await writeAnalysisToFile(audioPath, analysis);
       console.log("Analysis completed and saved.");
     }
 
-    // At this point, analysis is guaranteed to be non-null
     if (!analysis) {
       throw new Error("Failed to obtain analysis");
     }
@@ -97,19 +98,15 @@ async function processAudioFile(
     const existingMetadata = await readMetadata(audioPath);
 
     // Transform analysis to metadata format
-    const commentStrategy = args.commentStrategy as CommentStrategy;
     const newMetadata = transformAnalysisToMetadata(analysis, commentStrategy);
 
     // Merge existing and new metadata
-    const mergeStrategy = args.mergeStrategy as MergeStrategy;
     const mergedMetadata = mergeMetadata(existingMetadata, newMetadata, mergeStrategy);
 
     // Log metadata comparison
     console.log(`Metadata merge strategy: ${mergeStrategy}`);
     console.log("\nExisting metadata:");
-    console.log(
-      JSON.stringify(formatMetadataForLog(existingMetadata), null, 2)
-    );
+    console.log(JSON.stringify(formatMetadataForLog(existingMetadata), null, 2));
     console.log("\nMerged metadata:");
     console.log(JSON.stringify(formatMetadataForLog(mergedMetadata), null, 2));
 
@@ -118,29 +115,34 @@ async function processAudioFile(
 
     console.log("Metadata update completed successfully");
   } else {
-    // Analysis workflow
-    const analysis = await analyzeSong(audioPath, args.prompt);
+    // Analysis-only workflow
+    const analysis = await analyzeSong(audioPath, prompt);
     const analysisFile = await writeAnalysisToFile(audioPath, analysis);
     console.log(`Analysis result written to ${analysisFile}`);
   }
 }
 
 async function run(): Promise<void> {
-  const args = await argv;
+  const audioPath = argv.audio as string;
 
-  if (!fs.existsSync(args.audio)) {
-    console.error(`Error: Path not found at ${args.audio}`);
+  if (!fs.existsSync(audioPath)) {
+    console.error(`Error: Path not found at ${audioPath}`);
     process.exit(1);
   }
 
+  const mergeStrategy = (argv.mergeStrategy ?? "keep-existing") as MergeStrategy;
+  const commentStrategy = (argv.commentStrategy ?? "tags+summary") as CommentStrategy;
+  const updateMetadataFlag = Boolean(argv["update-metadata"]);
+  const prompt = argv.prompt as string | undefined;
+
   // Check if path is a directory or file
-  const stats = fs.statSync(args.audio);
+  const stats = fs.statSync(audioPath);
   const isDirectory = stats.isDirectory();
 
   if (isDirectory) {
     // Directory processing
-    console.log(`Scanning directory: ${args.audio}`);
-    const audioFiles = findAudioFiles(args.audio);
+    console.log(`Scanning directory: ${audioPath}`);
+    const audioFiles = findAudioFiles(audioPath);
 
     if (audioFiles.length === 0) {
       console.log("No audio files found in the specified directory.");
@@ -159,11 +161,11 @@ async function run(): Promise<void> {
       console.log(`\n[${i + 1}/${audioFiles.length}] Processing: ${fileName}`);
 
       try {
-        await processAudioFile(audioFile, args);
+        await processAudioFile(audioFile, updateMetadataFlag, prompt, mergeStrategy, commentStrategy);
         results.push({ success: true, file: audioFile });
         successCount++;
-      } catch (error: any) {
-        const errorMessage = error.message || String(error);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         console.error(`Error processing ${fileName}: ${errorMessage}`);
         results.push({ success: false, file: audioFile, error: errorMessage });
         failCount++;
@@ -187,18 +189,15 @@ async function run(): Promise<void> {
             console.log(`    Error: ${r.error}`);
           }
         });
-    }
-
-    // Exit with error code if any files failed
-    if (failCount > 0) {
       process.exit(1);
     }
   } else {
-    // Single file processing (existing behavior)
+    // Single file processing
     try {
-      await processAudioFile(args.audio, args);
-    } catch (error: any) {
-      console.error("Error during processing:", error.message);
+      await processAudioFile(audioPath, updateMetadataFlag, prompt, mergeStrategy, commentStrategy);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("Error during processing:", errorMessage);
       process.exit(1);
     }
   }

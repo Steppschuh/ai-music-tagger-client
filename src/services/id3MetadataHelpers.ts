@@ -185,6 +185,20 @@ export function createTXXXFields(
     addTXXXField(txxx, "Outro Notes", analysis.mixing.outroMixingNotes);
   }
 
+  // Section summaries
+  if (analysis.genres?.summary) {
+    addTXXXField(txxx, "Genres Summary", analysis.genres.summary);
+  }
+  if (analysis.moodsAndFeelings?.summary) {
+    addTXXXField(txxx, "Moods Summary", analysis.moodsAndFeelings.summary);
+  }
+  if (analysis.instrumentation?.summary) {
+    addTXXXField(txxx, "Instrumentation Summary", analysis.instrumentation.summary);
+  }
+  if (analysis.vocals?.summary) {
+    addTXXXField(txxx, "Vocals Summary", analysis.vocals.summary);
+  }
+
   // Genres
   if (analysis.genres?.secondary?.length > 0) {
     addTXXXField(
@@ -253,6 +267,15 @@ export function createTXXXFields(
       "Explicit Content",
       analysis.vocals.explicitContent.toString()
     );
+  }
+  if (analysis.vocals?.containsProfanity !== undefined) {
+    addTXXXField(txxx, "Contains Profanity", analysis.vocals.containsProfanity.toString());
+  }
+  if (analysis.vocals?.profanityTypes?.length > 0) {
+    addTXXXField(txxx, "Profanity Types", analysis.vocals.profanityTypes.join(", "));
+  }
+  if (analysis.vocals?.vocalDensity !== undefined) {
+    addTXXXField(txxx, "Vocal Density", analysis.vocals.vocalDensity.toFixed(2));
   }
   if (analysis.vocals?.sampleSources?.length > 0) {
     addTXXXField(
@@ -326,6 +349,35 @@ export function createTXXXFields(
     );
   }
 
+  // v19/v20 Mixing fields
+  if (analysis.mixing?.phrasingType) {
+    addTXXXField(txxx, "Phrasing Type", analysis.mixing.phrasingType);
+  }
+  if (analysis.mixing?.tempoType) {
+    addTXXXField(txxx, "Tempo Type", analysis.mixing.tempoType);
+  }
+  if (analysis.mixing?.stemSeparationSuitability !== undefined) {
+    addTXXXField(txxx, "Stem Separation Suitability", analysis.mixing.stemSeparationSuitability.toFixed(2));
+  }
+  if (analysis.mixing?.isAcapellaCompatible !== undefined) {
+    addTXXXField(txxx, "Acapella Compatible", analysis.mixing.isAcapellaCompatible.toString());
+  }
+  if (analysis.mixing?.hasCleanIntro !== undefined) {
+    addTXXXField(txxx, "Has Clean Intro", analysis.mixing.hasCleanIntro.toString());
+  }
+  if (analysis.mixing?.isDoubleDropFriendly !== undefined) {
+    addTXXXField(txxx, "Double Drop Friendly", analysis.mixing.isDoubleDropFriendly.toString());
+  }
+  if (analysis.mixing?.dropIntensityScore !== undefined) {
+    addTXXXField(txxx, "Drop Intensity Score", analysis.mixing.dropIntensityScore.toFixed(2));
+  }
+  if (analysis.mixing?.crowdEnergyShift) {
+    addTXXXField(txxx, "Crowd Energy Shift", analysis.mixing.crowdEnergyShift);
+  }
+  if (analysis.mixing?.frequencyProfile?.dominantFrequencyRange) {
+    addTXXXField(txxx, "Frequency Profile", analysis.mixing.frequencyProfile.dominantFrequencyRange);
+  }
+
   // Cue points and structure (as JSON strings for structured data)
   if (analysis.mixing?.suggestedCuePoints?.length > 0) {
     addTXXXField(
@@ -340,6 +392,22 @@ export function createTXXXFields(
       "Song Structure",
       JSON.stringify(analysis.mixing.songStructureSegments)
     );
+  }
+
+  // Stems analysis (V17)
+  if (analysis.stems) {
+    if (analysis.stems.drums?.summary) {
+      addTXXXField(txxx, "Stems: Drums", analysis.stems.drums.summary);
+    }
+    if (analysis.stems.bass?.summary) {
+      addTXXXField(txxx, "Stems: Bass", analysis.stems.bass.summary);
+    }
+    if (analysis.stems.vocals?.summary) {
+      addTXXXField(txxx, "Stems: Vocals", analysis.stems.vocals.summary);
+    }
+    if (analysis.stems.other?.summary) {
+      addTXXXField(txxx, "Stems: Other", analysis.stems.other.summary);
+    }
   }
 
   // Schema version

@@ -1,16 +1,29 @@
 import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import type { QueuedFile, AppView } from "@/types/tagger";
-import { analyzeTrack, writeAnalysisToFile } from "@/services/taggerService";
+import type { CommentStrategy } from "@/types/tagger";
+import type { SettingsState } from "@/types/tagger";
+import { analyzeTrack, writeAnalysisToFile, writeTagsFromAnalysis } from "@/services/taggerService";
 import { toUserMessage } from "@/lib/errorMessages";
 
 interface UseProcessingProps {
   files: QueuedFile[];
   updateFile: (id: string, updates: Partial<QueuedFile>) => void;
   autoSaveJson?: boolean;
+  tagStrategy?: SettingsState["tagStrategy"];
+  commentStrategy?: CommentStrategy;
 }
 
-export function useProcessing({ files, updateFile, autoSaveJson }: UseProcessingProps) {
+function tagStrategyToMergeStrategy(s: SettingsState["tagStrategy"]): string {
+  const map: Record<SettingsState["tagStrategy"], string> = {
+    keep: "keep-existing",
+    merge: "combine",
+    overwrite: "overwrite",
+  };
+  return map[s] ?? "keep-existing";
+}
+
+export function useProcessing({ files, updateFile, autoSaveJson, tagStrategy, commentStrategy }: UseProcessingProps) {
   const [view, setView] = useState<AppView>("start");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastInsight, setLastInsight] = useState<string | null>(null);
@@ -27,12 +40,13 @@ export function useProcessing({ files, updateFile, autoSaveJson }: UseProcessing
   const estimateTimeRemaining = useCallback(
     (idx: number) => {
       const remaining = totalToProcess - idx;
-      const avgSeconds = 5;
+      // ~5s analysis + ~1s tag write per file
+      const avgSeconds = tagStrategy !== "keep" ? 6 : 5;
       const totalSeconds = remaining * avgSeconds;
       if (totalSeconds < 60) return `~${totalSeconds}s`;
       return `~${Math.ceil(totalSeconds / 60)}m`;
     },
-    [totalToProcess]
+    [totalToProcess, tagStrategy]
   );
 
   const startProcessing = useCallback(async () => {
@@ -45,6 +59,7 @@ export function useProcessing({ files, updateFile, autoSaveJson }: UseProcessing
     stoppedRef.current = false;
 
     const filesToProcess = files.filter((f) => f.status === "pending");
+    const mergeStrategy = tagStrategyToMergeStrategy(tagStrategy ?? "overwrite");
 
     for (let i = 0; i < filesToProcess.length; i++) {
       if (stoppedRef.current) break;
@@ -54,18 +69,39 @@ export function useProcessing({ files, updateFile, autoSaveJson }: UseProcessing
       updateFile(file.id, { status: "analyzing" });
 
       try {
+        // ── Step 1: Analyse ──────────────────────────────────────────────────
         const result = await analyzeTrack(file.filePath);
+
         if (stoppedRef.current) {
           updateFile(file.id, { status: "pending" });
           break;
         }
+
+        // ── Step 2: Save JSON side-car (optional) ───────────────────────────
         if (autoSaveJson && window.api) {
           try {
             await writeAnalysisToFile(file.filePath, result);
           } catch (saveErr) {
-            toast.error(`Failed to save analysis for ${file.name}: ${toUserMessage(saveErr)}`);
+            toast.error(`Failed to save analysis JSON for ${file.name}: ${toUserMessage(saveErr)}`);
           }
         }
+
+        // ── Step 3: Auto-write ID3 tags ──────────────────────────────────────
+        if (tagStrategy !== "keep" && window.api) {
+          updateFile(file.id, { status: "writing-tags", result });
+          try {
+            await writeTagsFromAnalysis(
+              file.filePath,
+              result,
+              mergeStrategy,
+              commentStrategy ?? "tags+summary"
+            );
+          } catch (tagErr) {
+            // Tag writing failure is non-fatal – still mark as completed
+            toast.error(`Tags not written for ${file.name}: ${toUserMessage(tagErr)}`);
+          }
+        }
+
         updateFile(file.id, { status: "completed", result });
         setLastInsight(result.summary ?? null);
       } catch (err) {
@@ -89,7 +125,7 @@ export function useProcessing({ files, updateFile, autoSaveJson }: UseProcessing
       setView("results");
     }
     setIsProcessing(false);
-  }, [files, pendingFiles, updateFile, autoSaveJson]);
+  }, [files, pendingFiles, updateFile, autoSaveJson, tagStrategy, commentStrategy]);
 
   const stopProcessing = useCallback(() => {
     stoppedRef.current = true;
@@ -103,7 +139,7 @@ export function useProcessing({ files, updateFile, autoSaveJson }: UseProcessing
   }, []);
 
   const currentFileName =
-    files.filter((f) => f.status === "pending" || f.status === "analyzing")[0]
+    files.filter((f) => f.status === "pending" || f.status === "analyzing" || f.status === "writing-tags")[0]
       ?.name ?? "";
 
   return {

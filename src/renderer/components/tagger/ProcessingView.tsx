@@ -33,12 +33,16 @@ export function ProcessingView({
   const processedFiles = files.filter(
     (f) => f.status === "completed" || f.status === "error"
   );
+  const isWritingTags = files.some((f) => f.status === "writing-tags");
+
 
   return (
     <div className="flex flex-col gap-4 p-1">
       {/* Current file */}
       <div className="text-center">
-        <p className="text-xs text-muted-foreground">Analyzing</p>
+        <p className="text-xs text-muted-foreground">
+          {isWritingTags ? "Writing tags" : "Analyzing"}
+        </p>
         <p className="animate-shimmer mt-1 text-sm font-semibold">
           {currentFileName || "Preparing..."}
         </p>

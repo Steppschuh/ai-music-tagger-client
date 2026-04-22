@@ -43,7 +43,7 @@ export function SettingsPanel({
           {/* Account & Connection */}
           <section>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Account & Connection
+              Account &amp; Connection
             </h3>
             <div className="space-y-3">
               <div>
@@ -112,6 +112,9 @@ export function SettingsPanel({
                 <Label className="mb-2 block text-xs text-foreground">
                   Tag Strategy
                 </Label>
+                <p className="mb-2 text-[10px] text-muted-foreground">
+                  Tags are written automatically after each analysis.
+                </p>
                 <RadioGroup
                   value={settings.tagStrategy}
                   onValueChange={(val) =>
@@ -124,8 +127,8 @@ export function SettingsPanel({
                 >
                   {(
                     [
-                      ["keep", "Keep existing tags"],
-                      ["merge", "Merge with existing"],
+                      ["keep", "Keep existing tags (no auto-write)"],
+                      ["merge", "Merge with existing tags"],
                       ["overwrite", "Overwrite all tags"],
                     ] as const
                   ).map(([value, label]) => (
@@ -133,6 +136,44 @@ export function SettingsPanel({
                       <RadioGroupItem value={value} id={`strategy-${value}`} />
                       <Label
                         htmlFor={`strategy-${value}`}
+                        className="text-xs text-foreground"
+                      >
+                        {label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              <div>
+                <Label className="mb-2 block text-xs text-foreground">
+                  Comment Field
+                </Label>
+                <p className="mb-2 text-[10px] text-muted-foreground">
+                  What to write into the ID3 comment field.
+                </p>
+                <RadioGroup
+                  value={settings.commentStrategy ?? "tags+summary"}
+                  onValueChange={(val) =>
+                    onUpdateSetting(
+                      "commentStrategy",
+                      val as SettingsState["commentStrategy"]
+                    )
+                  }
+                  className="space-y-2"
+                >
+                  {(
+                    [
+                      ["tags+summary", "Tags + Summary (default)"],
+                      ["summary", "Summary only"],
+                      ["tags", "Tags only (CSV)"],
+                      ["hashtags", "Hashtags only"],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <div key={value} className="flex items-center gap-2">
+                      <RadioGroupItem value={value} id={`comment-${value}`} />
+                      <Label
+                        htmlFor={`comment-${value}`}
                         className="text-xs text-foreground"
                       >
                         {label}

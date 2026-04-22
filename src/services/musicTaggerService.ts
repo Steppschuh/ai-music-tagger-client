@@ -12,10 +12,14 @@ import {
   CommentStrategy,
 } from "./id3MetadataHelpers";
 
+import { getSettings } from "./settingsService";
+
+const RAPIDAPI_HOST = "ai-music-analyst.p.rapidapi.com";
+
 const API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://ai-music-tagger-932142402715.europe-west1.run.app"
-    : "http://localhost:3000";
+  process.env.NODE_ENV === "dev"
+    ? "http://localhost:3000"
+    : `https://${RAPIDAPI_HOST}`;
 
 const MAX_AUDIO_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
@@ -60,14 +64,35 @@ export async function analyzeSong(
     formData.append("prompt", prompt);
   }
 
+  const isLocalDev = process.env.NODE_ENV === "dev";
+  const { rapidApiKey } = getSettings();
+
+  if (!isLocalDev && !rapidApiKey) {
+    throw new Error(
+      "No RapidAPI key configured. Please add your key in Settings."
+    );
+  }
+
+  const headers: Record<string, string> = {};
+  if (!isLocalDev) {
+    headers["x-rapidapi-host"] = RAPIDAPI_HOST;
+    headers["x-rapidapi-key"] = rapidApiKey;
+  }
+
   const apiUrl = `${API_BASE_URL}/analyze`;
   const response = await fetch(apiUrl, {
     method: "POST",
+    headers,
     body: formData,
   });
 
   if (!response.ok) {
-    throw new Error(`Backend request failed with status ${response.status}`);
+    const body = await response.text().catch(() => "");
+    throw new Error(
+      `Backend request failed with status ${response.status}${
+        body ? `: ${body}` : ""
+      }`
+    );
   }
 
   return response.json();

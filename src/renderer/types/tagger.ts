@@ -1,6 +1,7 @@
-import type { AnalysisResult } from '../../shared/types';
+import type { AnalysisResult, SettingsState, CommentStrategy } from '../../shared/types';
+export type { SettingsState, CommentStrategy };
 
-export type FileStatus = "pending" | "analyzing" | "completed" | "error";
+export type FileStatus = "pending" | "analyzing" | "writing-tags" | "completed" | "error";
 
 export interface QueuedFile {
   id: string;
@@ -22,10 +23,4 @@ export interface ProcessingState {
   lastInsight: string | null;
 }
 
-export interface SettingsState {
-  rapidApiKey: string;
-  autoSaveJson: boolean;
-  tagStrategy: "keep" | "merge" | "overwrite";
-}
-
-export const SUPPORTED_FORMATS = [".mp3", ".flac", ".wav", ".aiff", ".m4a"];
+export const SUPPORTED_FORMATS = [".mp3", ".flac", ".wav", ".aiff", ".m4a", ".aac", ".ogg", ".opus", ".wma"];

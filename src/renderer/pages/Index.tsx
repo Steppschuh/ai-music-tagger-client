@@ -34,7 +34,13 @@ const Index = () => {
     stopProcessing,
     resetToStart,
     totalToProcess,
-  } = useProcessing({ files, updateFile, autoSaveJson: settings.autoSaveJson });
+  } = useProcessing({
+    files,
+    updateFile,
+    autoSaveJson: settings.autoSaveJson,
+    tagStrategy: settings.tagStrategy,
+    commentStrategy: settings.commentStrategy,
+  });
 
   const handleNewBatch = () => {
     clearFiles();

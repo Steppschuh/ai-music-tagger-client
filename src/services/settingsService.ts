@@ -5,6 +5,7 @@ const DEFAULT_SETTINGS: SettingsState = {
   rapidApiKey: "",
   autoSaveJson: false,
   tagStrategy: "overwrite",
+  commentStrategy: "tags+summary",
 };
 
 const store = new Store<SettingsState>({
