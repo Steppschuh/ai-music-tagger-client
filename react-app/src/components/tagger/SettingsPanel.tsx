@@ -40,8 +40,8 @@ export function SettingsPanel({
         </DialogHeader>
 
         <div className="space-y-5">
-          {/* Account & Connection */}
-          <section>
+            {/* Account & Connection */}
+            <section>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Account & Connection
             </h3>

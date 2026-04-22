@@ -35,11 +35,12 @@ export function SettingsPanel({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="border-border bg-card sm:max-w-md">
-        <DialogHeader>
+        <DialogHeader className="shrink-0">
           <DialogTitle className="text-foreground">Settings</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="min-h-0 flex-1 overflow-y-auto pr-2">
+          <div className="space-y-5 py-1">
           {/* Account & Connection */}
           <section>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -184,6 +185,7 @@ export function SettingsPanel({
               </div>
             </div>
           </section>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
