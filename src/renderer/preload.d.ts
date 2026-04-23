@@ -15,6 +15,7 @@ export interface ElectronAPI {
     commentStrategy?: string
   ) => Promise<void>;
   readAnalysisFromFile: (filePath: string) => Promise<AnalysisResult | null>;
+  hasBeenAnalyzed: (filePath: string) => Promise<boolean>;
   writeAnalysisToFile: (filePath: string, analysis: unknown) => Promise<string>;
   selectFiles: () => Promise<string[]>;
   selectDirectory: () => Promise<string[]>;

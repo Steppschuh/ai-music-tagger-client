@@ -7,7 +7,7 @@ import { selectFiles, selectDirectory } from "@/services/taggerService";
 import { toUserMessage } from "@/lib/errorMessages";
 
 interface DropZoneProps {
-  onFilesAdded: (paths: string[]) => number;
+  onFilesAdded: (paths: string[]) => number | Promise<number>;
 }
 
 export function DropZone({ onFilesAdded }: DropZoneProps) {
@@ -22,7 +22,7 @@ export function DropZone({ onFilesAdded }: DropZoneProps) {
     try {
       const paths = await selectFiles();
       if (paths.length > 0) {
-        onFilesAdded(paths);
+        await onFilesAdded(paths);
       }
     } catch (err) {
       toast.error(`Failed to select files: ${toUserMessage(err)}`);
@@ -40,7 +40,7 @@ export function DropZone({ onFilesAdded }: DropZoneProps) {
     try {
       const paths = await selectDirectory();
       if (paths.length > 0) {
-        onFilesAdded(paths);
+        await onFilesAdded(paths);
       }
     } catch (err) {
       toast.error(`Failed to select folder: ${toUserMessage(err)}`);

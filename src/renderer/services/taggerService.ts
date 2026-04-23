@@ -49,6 +49,13 @@ export async function readAnalysisFromFile(
   return window.api.readAnalysisFromFile(filePath);
 }
 
+export async function hasBeenAnalyzed(filePath: string): Promise<boolean> {
+  if (!window.api) {
+    throw new Error("Electron API not available");
+  }
+  return window.api.hasBeenAnalyzed(filePath);
+}
+
 export async function writeAnalysisToFile(
   filePath: string,
   analysis: AnalysisResult

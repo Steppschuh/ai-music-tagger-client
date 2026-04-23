@@ -59,7 +59,7 @@ const Index = () => {
       <div className="min-h-0 flex-1 overflow-auto p-4 md:p-6">
           {view === "start" && (
             <>
-              <DropZone onFilesAdded={addFiles} />
+              <DropZone onFilesAdded={(paths) => addFiles(paths, settings.skipAlreadyAnalyzed)} />
             </>
           )}
 

@@ -9,6 +9,7 @@ import {
   writeAnalysisToFile,
   findAudioFiles,
   transformAnalysisToMetadata,
+  hasBeenAnalyzed,
 } from './services/musicTaggerService';
 import { getSettings, setSettings } from './services/settingsService';
 
@@ -24,6 +25,10 @@ ipcMain.handle('analyze-file', async (_, filePath: string, prompt?: string) => {
 
 ipcMain.handle('read-tags', async (_, filePath: string) => {
   return readMetadata(filePath);
+});
+
+ipcMain.handle('has-been-analyzed', async (_, filePath: string) => {
+  return hasBeenAnalyzed(filePath);
 });
 
 ipcMain.handle(

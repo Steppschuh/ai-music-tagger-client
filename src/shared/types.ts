@@ -383,6 +383,7 @@ export interface SettingsState {
   autoSaveJson: boolean;
   tagStrategy: "keep" | "merge" | "overwrite";
   commentStrategy: CommentStrategy;
+  skipAlreadyAnalyzed: boolean;
   /** Dev-only: route requests to the /analyzeMock endpoint instead of the real one. Never true in production builds. */
   mockAnalysis: boolean;
 }

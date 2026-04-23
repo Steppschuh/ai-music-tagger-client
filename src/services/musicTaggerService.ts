@@ -14,6 +14,31 @@ import {
 
 import { getSettings } from "./settingsService";
 
+export async function hasBeenAnalyzed(audioPath: string): Promise<boolean> {
+  const isAnalyzed = await readAnalysisFromFile(audioPath);
+  if (isAnalyzed) return true;
+
+  try {
+    const metadata = await readMetadata(audioPath);
+    if (metadata) {
+      if (metadata.encodedBy === "AI Music Tagger" || metadata.encoder === "AI Music Tagger") {
+        return true;
+      }
+      if (metadata.userDefinedText) {
+        const txxx = Array.isArray(metadata.userDefinedText)
+          ? metadata.userDefinedText
+          : [metadata.userDefinedText];
+        if (txxx.some((t: any) => t.description === "Schema Version")) {
+          return true;
+        }
+      }
+    }
+  } catch (err) {
+    // Ignore error reading metadata
+  }
+  return false;
+}
+
 const RAPIDAPI_HOST = "ai-music-analyst.p.rapidapi.com";
 
 const API_BASE_URL =

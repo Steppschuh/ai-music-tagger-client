@@ -6,6 +6,7 @@ const DEFAULT_SETTINGS: SettingsState = {
   autoSaveJson: false,
   tagStrategy: "overwrite",
   commentStrategy: "tags+summary",
+  skipAlreadyAnalyzed: true,
   // Enabled by default during local development; always forced off in production.
   mockAnalysis: process.env.NODE_ENV === "dev",
 };

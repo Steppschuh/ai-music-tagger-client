@@ -109,6 +109,19 @@ export function SettingsPanel({
                 />
               </div>
 
+              <div className="flex items-center justify-between">
+                <Label htmlFor="skip-analyzed" className="text-xs text-foreground">
+                  Skip Already Analyzed Files
+                </Label>
+                <Switch
+                  id="skip-analyzed"
+                  checked={settings.skipAlreadyAnalyzed ?? true}
+                  onCheckedChange={(val) =>
+                    onUpdateSetting("skipAlreadyAnalyzed", val)
+                  }
+                />
+              </div>
+
               <div>
                 <Label className="mb-2 block text-xs text-foreground">
                   Tag Strategy
