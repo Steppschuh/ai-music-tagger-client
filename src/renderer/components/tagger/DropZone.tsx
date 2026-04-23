@@ -7,7 +7,7 @@ import { selectFiles, selectDirectory } from "@/services/taggerService";
 import { toUserMessage } from "@/lib/errorMessages";
 
 interface DropZoneProps {
-  onFilesAdded: (paths: string[]) => number | Promise<number>;
+  onFilesAdded: (paths: string[]) => { added: number, skipped: number } | Promise<{ added: number, skipped: number }>;
 }
 
 export function DropZone({ onFilesAdded }: DropZoneProps) {

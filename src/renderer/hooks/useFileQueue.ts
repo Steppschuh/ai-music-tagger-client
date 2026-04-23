@@ -18,6 +18,7 @@ export function useFileQueue() {
   const addFiles = useCallback(async (paths: string[], skipAnalyzed = false) => {
     const audioPaths = paths.filter(isAudioFile);
     let finalPaths = audioPaths;
+    let skippedPaths: string[] = [];
 
     if (skipAnalyzed && window.api) {
       // Check which files have already been analyzed
@@ -28,6 +29,7 @@ export function useFileQueue() {
         })
       );
       finalPaths = statuses.filter(s => !s.isAnalyzed).map(s => s.path);
+      skippedPaths = statuses.filter(s => s.isAnalyzed).map(s => s.path);
     }
 
     const queued: QueuedFile[] = finalPaths.map((filePath) => ({
@@ -44,7 +46,11 @@ export function useFileQueue() {
       return [...prev, ...newFiles];
     });
     
-    return queued.length;
+    return {
+      added: queued.length,
+      skipped: skippedPaths.length,
+      skippedPaths
+    };
   }, []);
 
   const removeFile = useCallback((id: string) => {

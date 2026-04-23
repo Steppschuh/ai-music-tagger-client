@@ -4,6 +4,15 @@ import { DropZone } from "@/components/tagger/DropZone";
 import { StatusBar } from "@/components/tagger/StatusBar";
 import { ProcessingView } from "@/components/tagger/ProcessingView";
 import { ResultsView } from "@/components/tagger/ResultsView";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { SettingsPanel } from "@/components/tagger/SettingsPanel";
 import { useFileQueue } from "@/hooks/useFileQueue";
 import { useProcessing } from "@/hooks/useProcessing";
@@ -11,6 +20,7 @@ import { useSettings } from "@/hooks/useSettings";
 
 const Index = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [skippedPathsToReanalyze, setSkippedPathsToReanalyze] = useState<string[]>([]);
   const { settings, updateSetting } = useSettings();
 
   const {
@@ -47,6 +57,24 @@ const Index = () => {
     resetToStart();
   };
 
+  const handleAddFiles = async (paths: string[]) => {
+    const { added, skipped, skippedPaths } = await addFiles(paths, settings.skipAlreadyAnalyzed);
+    
+    if (skipped > 0 && skippedPaths) {
+      if (added === 0) {
+        setSkippedPathsToReanalyze(skippedPaths);
+      } else {
+        toast.info(`Skipped ${skipped} already analyzed file${skipped !== 1 ? 's' : ''}.`);
+      }
+    }
+  };
+
+  const handleReanalyzeSkipped = async () => {
+    const paths = [...skippedPathsToReanalyze];
+    setSkippedPathsToReanalyze([]);
+    await addFiles(paths, false);
+  };
+
   const statusLabel = isProcessing
     ? "PROCESSING"
     : view === "results"
@@ -59,7 +87,7 @@ const Index = () => {
       <div className="min-h-0 flex-1 overflow-auto p-4 md:p-6">
           {view === "start" && (
             <>
-              <DropZone onFilesAdded={(paths) => addFiles(paths, settings.skipAlreadyAnalyzed)} />
+              <DropZone onFilesAdded={handleAddFiles} />
             </>
           )}
 
@@ -109,6 +137,37 @@ const Index = () => {
         settings={settings}
         onUpdateSetting={updateSetting}
       />
+
+      {/* All Skipped Dialog */}
+      <Dialog open={skippedPathsToReanalyze.length > 0} onOpenChange={(open) => !open && setSkippedPathsToReanalyze([])}>
+        <DialogContent className="border-border bg-card sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">
+              Re-analyze {skippedPathsToReanalyze.length} file{skippedPathsToReanalyze.length !== 1 ? 's' : ''}?
+            </DialogTitle>
+            <DialogDescription>
+              These files have already been analyzed.
+              You can change this default behavior in the settings.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-end gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSkippedPathsToReanalyze([])}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="default"
+              onClick={handleReanalyzeSkipped}
+            >
+              Re-analyze
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
