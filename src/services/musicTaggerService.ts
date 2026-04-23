@@ -21,6 +21,7 @@ const API_BASE_URL =
     ? "http://localhost:3000"
     : `https://${RAPIDAPI_HOST}`;
 
+
 const MAX_AUDIO_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
 function validateFilePath(filePath: string): string {
@@ -65,7 +66,9 @@ export async function analyzeSong(
   }
 
   const isLocalDev = process.env.NODE_ENV === "dev";
-  const { rapidApiKey } = getSettings();
+  const { rapidApiKey, mockAnalysis } = getSettings();
+  // Guard: mock mode is only honoured in dev builds, never in production.
+  const useMock = isLocalDev && mockAnalysis;
 
   if (!isLocalDev && !rapidApiKey) {
     throw new Error(
@@ -79,7 +82,11 @@ export async function analyzeSong(
     headers["x-rapidapi-key"] = rapidApiKey;
   }
 
-  const apiUrl = `${API_BASE_URL}/analyze`;
+  let apiUrl = `${API_BASE_URL}/analyze`;
+  if (useMock) {
+    // Route to the mock endpoint to avoid spending real API tokens during dev.
+    apiUrl += `Mock`;
+  }
   const response = await fetch(apiUrl, {
     method: "POST",
     headers,

@@ -185,6 +185,39 @@ export function SettingsPanel({
               </div>
             </div>
           </section>
+
+          {/* Developer (dev builds only — Vite strips this in production) */}
+          {import.meta.env.DEV && (
+            <>
+              <Separator />
+              <section>
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Developer
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="mock-analysis" className="text-xs text-foreground">
+                        Mock Analysis
+                      </Label>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Route requests to{" "}
+                        <code className="font-mono">/analyzeMock</code> — saves
+                        API tokens during development.
+                      </p>
+                    </div>
+                    <Switch
+                      id="mock-analysis"
+                      checked={settings.mockAnalysis ?? true}
+                      onCheckedChange={(val) =>
+                        onUpdateSetting("mockAnalysis", val)
+                      }
+                    />
+                  </div>
+                </div>
+              </section>
+            </>
+          )}
           </div>
         </div>
       </DialogContent>

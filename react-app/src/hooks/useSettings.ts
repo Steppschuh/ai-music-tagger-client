@@ -5,6 +5,8 @@ const DEFAULT_SETTINGS: SettingsState = {
   rapidApiKey: "",
   autoSaveJson: false,
   tagStrategy: "overwrite",
+  // Enabled by default during local development (`npm start`); always false in production builds.
+  mockAnalysis: import.meta.env.DEV,
 };
 
 export function useSettings() {

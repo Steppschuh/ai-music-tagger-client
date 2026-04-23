@@ -8,6 +8,8 @@ const DEFAULT_SETTINGS: SettingsState = {
   autoSaveJson: false,
   tagStrategy: "overwrite",
   commentStrategy: "tags+summary",
+  // Enabled by default during local development (`npm start`); always false in production builds.
+  mockAnalysis: import.meta.env.DEV,
 };
 
 export function useSettings() {

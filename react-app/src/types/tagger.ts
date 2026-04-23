@@ -34,6 +34,8 @@ export interface SettingsState {
   rapidApiKey: string;
   autoSaveJson: boolean;
   tagStrategy: "keep" | "merge" | "overwrite";
+  /** Dev-only: use the mock analysis endpoint. Never surfaced in production builds. */
+  mockAnalysis: boolean;
 }
 
 export const SUPPORTED_FORMATS = [".mp3", ".flac", ".wav", ".aiff"];

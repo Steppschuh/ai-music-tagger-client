@@ -17,7 +17,6 @@ interface ProcessingViewProps {
   estimatedTime: string;
   lastInsight: string | null;
   files: QueuedFile[];
-  onStop: () => void;
 }
 
 export function ProcessingView({
@@ -26,7 +25,6 @@ export function ProcessingView({
   estimatedTime,
   lastInsight,
   files,
-  onStop,
 }: ProcessingViewProps) {
   const [logOpen, setLogOpen] = useState(false);
 
@@ -107,15 +105,6 @@ export function ProcessingView({
           </ScrollArea>
         </CollapsibleContent>
       </Collapsible>
-
-      {/* Stop button */}
-      <Button
-        variant="destructive"
-        className="w-full"
-        onClick={onStop}
-      >
-        Stop AI
-      </Button>
     </div>
   );
 }

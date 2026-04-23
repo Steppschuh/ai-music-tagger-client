@@ -24,10 +24,12 @@ export function useProcessing({ files, updateFile }: UseProcessingProps) {
   const estimateTimeRemaining = useCallback(
     (idx: number) => {
       const remaining = totalToProcess - idx;
-      const avgSeconds = 2; // ~2s per track mock
-      const totalSeconds = remaining * avgSeconds;
+      const SECONDS_PER_FILE = 30;
+      const totalSeconds = remaining * SECONDS_PER_FILE;
       if (totalSeconds < 60) return `~${totalSeconds}s`;
-      return `~${Math.ceil(totalSeconds / 60)}m`;
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      return secs > 0 ? `~${mins}m ${secs}s` : `~${mins}m`;
     },
     [totalToProcess]
   );

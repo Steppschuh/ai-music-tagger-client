@@ -1,33 +1,25 @@
-import { RotateCcw, Zap, Music2, Gauge, KeyRound, Palette, Layers } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Zap, Music2, Gauge, KeyRound, Palette, Layers } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import type { QueuedFile } from "@/types/tagger";
 
 interface ResultsViewProps {
   files: QueuedFile[];
-  onClear: () => void;
 }
 
-export function ResultsView({ files, onClear }: ResultsViewProps) {
+export function ResultsView({ files }: ResultsViewProps) {
   const completed = files.filter((f) => f.status === "completed");
   const errors = files.filter((f) => f.status === "error");
 
   return (
     <div className="flex flex-col gap-4 p-1">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-foreground">
-            Analysis Complete
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {completed.length} tagged, {errors.length} error{errors.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <Button variant="secondary" size="sm" onClick={onClear}>
-          <RotateCcw className="mr-1.5 h-3 w-3" />
-          New Batch
-        </Button>
+      <div>
+        <p className="text-sm font-medium text-foreground">
+          Analysis Complete
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {completed.length} tagged, {errors.length} error{errors.length !== 1 ? "s" : ""}
+        </p>
       </div>
 
       <ScrollArea className="max-h-[360px]">
