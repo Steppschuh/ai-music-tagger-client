@@ -13,7 +13,7 @@ function checkIsLocalDev(): boolean {
 
 const DEFAULT_SETTINGS: SettingsState = {
   rapidApiKey: "",
-  autoSaveJson: false,
+  autoSaveJson: true,
   tagStrategy: "overwrite",
   commentStrategy: "tags+summary",
   skipAlreadyAnalyzed: true,

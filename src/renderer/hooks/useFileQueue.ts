@@ -17,6 +17,8 @@ export function useFileQueue() {
 
   const addFiles = useCallback(async (paths: string[], skipAnalyzed = false) => {
     const audioPaths = paths.filter(isAudioFile);
+    const unsupportedPaths = paths.filter(p => !isAudioFile(p));
+    
     let finalPaths = audioPaths;
     let skippedPaths: string[] = [];
 
@@ -39,17 +41,21 @@ export function useFileQueue() {
       status: "pending",
     }));
     
+    let addedCount = 0;
     setFiles((prev) => {
       // Avoid adding duplicates
       const existingPaths = new Set(prev.map(f => f.filePath));
       const newFiles = queued.filter(f => !existingPaths.has(f.filePath));
+      addedCount = newFiles.length;
       return [...prev, ...newFiles];
     });
     
     return {
-      added: queued.length,
+      added: addedCount,
       skipped: skippedPaths.length,
-      skippedPaths
+      unsupported: unsupportedPaths.length,
+      skippedPaths,
+      unsupportedPaths
     };
   }, []);
 

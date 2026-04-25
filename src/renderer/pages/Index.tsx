@@ -59,10 +59,14 @@ const Index = () => {
   };
 
   const handleAddFiles = async (paths: string[]) => {
-    const { added, skipped, skippedPaths } = await addFiles(paths, settings.skipAlreadyAnalyzed);
+    const { added, skipped, unsupported, skippedPaths } = await addFiles(paths, settings.skipAlreadyAnalyzed);
     
+    if (unsupported > 0) {
+      toast.warning(`Skipped ${unsupported} unsupported file${unsupported !== 1 ? 's' : ''}.`);
+    }
+
     if (skipped > 0 && skippedPaths) {
-      if (added === 0) {
+      if (added === 0 && unsupported === 0) {
         setSkippedPathsToReanalyze(skippedPaths);
       } else {
         toast.info(`Skipped ${skipped} already analyzed file${skipped !== 1 ? 's' : ''}.`);
@@ -91,34 +95,38 @@ const Index = () => {
       : "READY";
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
+    <div className="flex h-screen w-full flex-col bg-background overflow-hidden">
       {/* Main content area */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4 md:p-6">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {view === "start" && (
-            <>
+            <div className="flex-1 overflow-y-auto p-4 md:p-6">
               <DropZone 
                 onFilesAdded={handleAddFiles} 
                 onSettingsClick={() => setSettingsOpen(true)}
               />
-            </>
+            </div>
           )}
 
           {view === "processing" && (
-            <ProcessingView
-              currentFileName={currentFileName}
-              estimatedTime={estimateTimeRemaining(currentIndex)}
-              lastInsight={lastInsight}
-              files={files}
-            />
+            <div className="flex-1 overflow-y-auto p-4 md:p-6">
+              <ProcessingView
+                currentFileName={currentFileName}
+                estimatedTime={estimateTimeRemaining(currentIndex)}
+                lastInsight={lastInsight}
+                files={files}
+              />
+            </div>
           )}
 
           {view === "results" && (
-            <ResultsView files={files} onClear={handleNewBatch} settings={settings} />
+            <div className="flex-1 flex flex-col min-h-0">
+              <ResultsView files={files} onClear={handleNewBatch} settings={settings} />
+            </div>
           )}
-      </div>
+      </main>
 
       {/* Footer sticky at the bottom */}
-      <footer className="border-t border-border bg-card-header transition-all duration-300 ease-in-out">
+      <footer className="shrink-0 border-t border-border bg-card-header transition-all duration-300 ease-in-out">
         <StatusBar
           status={statusLabel}
           percentage={percentage}

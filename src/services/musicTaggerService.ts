@@ -1,5 +1,6 @@
 import { AnalysisResult } from "../shared/types";
 import { AUDIO_EXTENSIONS } from "../shared/types";
+import { app } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 // @ts-expect-error - node-id3 may not have TypeScript types
@@ -40,6 +41,9 @@ export async function hasBeenAnalyzed(audioPath: string): Promise<boolean> {
 }
 
 function checkIsLocalDev(): boolean {
+  if (app && !app.isPackaged) {
+    return true;
+  }
   if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev") {
     return true;
   }

@@ -41,11 +41,9 @@ An advanced desktop application built with Electron and React that leverages AI 
    npm install
    ```
 
-3. (Optional) Set up the frontend separately if needed:
+3. (Optional) Run the renderer in development mode:
    ```bash
-   cd react-app
-   npm install
-   cd ..
+   npm start
    ```
 
 ### Development
@@ -78,7 +76,7 @@ npm run make
 - `src/main.ts`: Electron main process logic.
 - `src/preload.ts`: Bridge between Electron and the React frontend.
 - `src/services/`: Core logic for music analysis and tagging.
-- `react-app/`: The React frontend application.
+- `src/renderer/`: The React frontend application.
 - `forge.config.ts`: Configuration for Electron Forge and Vite.
 - `PUBLISH_CHECKLIST.md`: Current roadmap and publication status.
 

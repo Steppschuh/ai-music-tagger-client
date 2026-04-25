@@ -4,6 +4,7 @@ import packageJson from "../../../../package.json";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -72,7 +73,7 @@ export function SettingsPanel({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         className="w-[400px] sm:w-[540px] border-border bg-card overflow-y-auto sm:max-w-md"
-        onOpenAutoFocus={(e) => e.preventDefault()}
+        aria-describedby={undefined}
       >
         <SheetHeader className="shrink-0 mb-4">
           <SheetTitle className="text-foreground text-left">Settings</SheetTitle>
