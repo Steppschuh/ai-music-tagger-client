@@ -386,6 +386,8 @@ export interface SettingsState {
   skipAlreadyAnalyzed: boolean;
   /** Dev-only: route requests to the /analyzeMock endpoint instead of the real one. Never true in production builds. */
   mockAnalysis: boolean;
+  /** Dev-only: route requests to localhost:3000 instead of RapidAPI. Never true in production builds. */
+  useLocalBackend: boolean;
 }
 
 export const AUDIO_EXTENSIONS = [

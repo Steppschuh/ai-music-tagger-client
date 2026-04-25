@@ -52,10 +52,6 @@ function checkIsLocalDev(): boolean {
 
 const RAPIDAPI_HOST = "ai-music-analyst.p.rapidapi.com";
 
-const API_BASE_URL = checkIsLocalDev()
-  ? "http://localhost:3000"
-  : `https://${RAPIDAPI_HOST}`;
-
 
 const MAX_AUDIO_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
@@ -101,18 +97,20 @@ export async function analyzeSong(
   }
 
   const isLocalDev = checkIsLocalDev();
-  const { rapidApiKey, mockAnalysis } = getSettings();
+  const { rapidApiKey, mockAnalysis, useLocalBackend } = getSettings();
   // Guard: mock mode is only honoured in dev builds, never in production.
   const useMock = isLocalDev && mockAnalysis;
+  const useLocal = isLocalDev && useLocalBackend;
+  const API_BASE_URL = useLocal ? "http://localhost:3000" : `https://${RAPIDAPI_HOST}`;
 
-  if (!isLocalDev && !rapidApiKey) {
+  if (!useLocal && !rapidApiKey) {
     throw new Error(
       "No RapidAPI key configured. Please add your key in Settings."
     );
   }
 
   const headers: Record<string, string> = {};
-  if (!isLocalDev) {
+  if (!useLocal) {
     headers["x-rapidapi-host"] = RAPIDAPI_HOST;
     headers["x-rapidapi-key"] = rapidApiKey;
   }
@@ -150,8 +148,10 @@ export interface QuotaInfo {
 
 export async function testApiKey(apiKey: string): Promise<QuotaInfo> {
   const isLocalDev = checkIsLocalDev();
-  const { mockAnalysis } = getSettings();
+  const { mockAnalysis, useLocalBackend } = getSettings();
   const useMock = isLocalDev && mockAnalysis;
+  const useLocal = isLocalDev && useLocalBackend;
+  const API_BASE_URL = useLocal ? "http://localhost:3000" : `https://${RAPIDAPI_HOST}`;
   
   if (!apiKey) {
     return { valid: false, message: "No API key provided." };

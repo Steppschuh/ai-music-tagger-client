@@ -323,6 +323,23 @@ export function SettingsPanel({
                           }
                         />
                       </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="local-backend" className="text-xs text-foreground">
+                            Local Backend
+                          </Label>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Route requests to <code className="font-mono bg-muted px-1 rounded">localhost:3000</code>.
+                          </p>
+                        </div>
+                        <Switch
+                          id="local-backend"
+                          checked={settings.useLocalBackend ?? true}
+                          onCheckedChange={(val) =>
+                            onUpdateSetting("useLocalBackend", val)
+                          }
+                        />
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

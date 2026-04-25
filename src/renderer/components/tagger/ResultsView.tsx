@@ -20,8 +20,7 @@ function tagStrategyToMergeStrategy(s: SettingsState["tagStrategy"]): string {
 
 function getDisplayValues(analysis: AnalysisResult) {
   return {
-    genre: analysis.genres?.primary?.[0],
-    bpm: analysis.mixing?.bpm,
+    summary: analysis.summary,
   };
 }
 
@@ -89,16 +88,15 @@ export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
                 </div>
 
                 {values ? (
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex gap-3 text-[10px] text-muted-foreground">
-                      {values.genre && <span>{values.genre}</span>}
-                      {values.bpm && <span>{values.bpm} BPM</span>}
+                  <div className="flex items-start justify-between mt-1.5 gap-4">
+                    <div className="flex-1 text-[10px] text-muted-foreground italic leading-relaxed">
+                      {values.summary}
                     </div>
                     {file.filePath && settings?.tagStrategy === "keep" && (
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-6 text-[10px] px-2"
+                        className="h-6 text-[10px] px-2 shrink-0 self-center"
                         onClick={() => handleWriteTags(file)}
                         disabled={writingId === file.id}
                       >

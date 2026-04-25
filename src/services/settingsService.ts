@@ -19,6 +19,7 @@ const DEFAULT_SETTINGS: SettingsState = {
   skipAlreadyAnalyzed: true,
   // Enabled by default during local development; always forced off in production.
   mockAnalysis: checkIsLocalDev(),
+  useLocalBackend: checkIsLocalDev(),
 };
 
 const store = new Store<SettingsState>({
