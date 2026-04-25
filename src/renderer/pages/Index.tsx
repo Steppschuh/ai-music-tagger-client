@@ -87,7 +87,10 @@ const Index = () => {
       <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4 md:p-6">
           {view === "start" && (
             <>
-              <DropZone onFilesAdded={handleAddFiles} />
+              <DropZone 
+                onFilesAdded={handleAddFiles} 
+                onSettingsClick={() => setSettingsOpen(true)}
+              />
             </>
           )}
 
@@ -112,7 +115,6 @@ const Index = () => {
         <StatusBar
           status={statusLabel}
           percentage={percentage}
-          onSettingsClick={() => setSettingsOpen(true)}
         />
         <div className="px-4 pb-4">
           <Button
@@ -122,10 +124,10 @@ const Index = () => {
             disabled={pendingCount === 0 || isProcessing || view === "results"}
           >
             {isProcessing 
-              ? `Processing ${currentIndex + 1} of ${totalToProcess}...`
+              ? `Analyzing ${currentIndex + 1} of ${totalToProcess}...`
               : pendingCount > 0
-                ? `Process ${pendingCount} file${pendingCount !== 1 ? "s" : ""}`
-                : "Select files to process"}
+                ? `Analyze ${pendingCount} file${pendingCount !== 1 ? "s" : ""}`
+                : "Select files to analyze"}
           </Button>
         </div>
       </footer>

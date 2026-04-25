@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { Upload, FolderOpen } from "lucide-react";
+import { Upload, FolderOpen, FileMusic, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SUPPORTED_FORMATS } from "@/types/tagger";
 import { selectFiles, selectDirectory, expandPaths } from "@/services/taggerService";
@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 
 interface DropZoneProps {
   onFilesAdded: (paths: string[]) => { added: number, skipped: number } | Promise<{ added: number, skipped: number }>;
+  onSettingsClick?: () => void;
 }
 
-export function DropZone({ onFilesAdded }: DropZoneProps) {
+export function DropZone({ onFilesAdded, onSettingsClick }: DropZoneProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSelectFiles = useCallback(async () => {
@@ -92,7 +93,7 @@ export function DropZone({ onFilesAdded }: DropZoneProps) {
   return (
     <div 
       className={cn(
-        "flex flex-1 flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-all duration-200",
+        "relative flex flex-1 flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-all duration-200",
         isDragging 
           ? "border-primary bg-primary/5 scale-[1.02] shadow-md" 
           : "border-muted-foreground/25 hover:border-muted-foreground/40",
@@ -102,14 +103,25 @@ export function DropZone({ onFilesAdded }: DropZoneProps) {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
+      {onSettingsClick && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute right-4 top-4 h-11 w-11 text-muted-foreground hover:text-foreground"
+          onClick={(e) => { e.stopPropagation(); onSettingsClick(); }}
+          aria-label="Settings"
+        >
+          <Settings className="h-6 w-6" />
+        </Button>
+      )}
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
         <Upload className="h-6 w-6 text-muted-foreground" />
       </div>
       <p className="mb-1 text-sm font-medium text-foreground">
-        Select audio files or folder
+        Drag & drop audio files or folders here
       </p>
       <p className="mb-4 text-xs text-muted-foreground">
-        Supported: {SUPPORTED_FORMATS.map((f) => f.replace(".", "").toUpperCase()).join(", ")}
+        Supported: {SUPPORTED_FORMATS.map((f) => f.replace(".", "").toUpperCase()).join(", ")} up to 20MB per file
       </p>
       <div className="flex gap-2">
         <Button
@@ -118,6 +130,7 @@ export function DropZone({ onFilesAdded }: DropZoneProps) {
           onClick={handleSelectFiles}
           disabled={isLoading}
         >
+          <FileMusic className="mr-1.5 h-3 w-3" />
           Select Files
         </Button>
         <Button
