@@ -40,13 +40,13 @@ export function useProcessing({ files, updateFile, autoSaveJson, tagStrategy, co
   const estimateTimeRemaining = useCallback(
     (idx: number) => {
       const remaining = totalToProcess - idx;
-      // ~5s analysis + ~1s tag write per file
-      const avgSeconds = tagStrategy !== "keep" ? 6 : 5;
+      // ~45s analysis per file
+      const avgSeconds = 45;
       const totalSeconds = remaining * avgSeconds;
       if (totalSeconds < 60) return `~${totalSeconds}s`;
       return `~${Math.ceil(totalSeconds / 60)}m`;
     },
-    [totalToProcess, tagStrategy]
+    [totalToProcess]
   );
 
   const startProcessing = useCallback(async () => {

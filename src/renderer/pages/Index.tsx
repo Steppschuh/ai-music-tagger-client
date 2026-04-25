@@ -20,6 +20,7 @@ import { useSettings } from "@/hooks/useSettings";
 
 const Index = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [skippedPathsToReanalyze, setSkippedPathsToReanalyze] = useState<string[]>([]);
   const { settings, updateSetting } = useSettings();
 
@@ -75,6 +76,14 @@ const Index = () => {
     await addFiles(paths, false);
   };
 
+  const handleStartClick = () => {
+    if (!settings.rapidApiKey) {
+      setApiKeyDialogOpen(true);
+      return;
+    }
+    startProcessing();
+  };
+
   const statusLabel = isProcessing
     ? "PROCESSING"
     : view === "results"
@@ -97,11 +106,9 @@ const Index = () => {
           {view === "processing" && (
             <ProcessingView
               currentFileName={currentFileName}
-              percentage={percentage}
               estimatedTime={estimateTimeRemaining(currentIndex)}
               lastInsight={lastInsight}
               files={files}
-              onStop={stopProcessing}
             />
           )}
 
@@ -120,14 +127,16 @@ const Index = () => {
           <Button
             className="w-full shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
             size="lg"
-            onClick={startProcessing}
-            disabled={pendingCount === 0 || isProcessing || view === "results"}
+            onClick={view === "results" ? handleNewBatch : handleStartClick}
+            disabled={isProcessing || (view !== "results" && pendingCount === 0)}
           >
-            {isProcessing 
-              ? `Analyzing ${currentIndex + 1} of ${totalToProcess}...`
-              : pendingCount > 0
-                ? `Analyze ${pendingCount} file${pendingCount !== 1 ? "s" : ""}`
-                : "Select files to analyze"}
+            {view === "results" 
+              ? "New Batch"
+              : isProcessing 
+                ? `Analyzing ${currentIndex + 1} of ${totalToProcess}...`
+                : pendingCount > 0
+                  ? `Analyze ${pendingCount} file${pendingCount !== 1 ? "s" : ""}`
+                  : "Select files to analyze"}
           </Button>
         </div>
       </footer>
@@ -166,6 +175,44 @@ const Index = () => {
               onClick={handleReanalyzeSkipped}
             >
               Re-analyze
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* API Key Required Dialog */}
+      <Dialog open={apiKeyDialogOpen} onOpenChange={setApiKeyDialogOpen}>
+        <DialogContent className="border-border bg-card sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">
+              API Key Required
+            </DialogTitle>
+            <DialogDescription>
+              Analysing audio files using powerfull AI models consumes a lot of resources and is therfore rate limited.
+              To authorize analysis requests, please provide your API key.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-end gap-2 sm:gap-0 mt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (window.api) {
+                  window.api.openExternal("https://ai-music-tagger.web.app/#get-started");
+                }
+              }}
+            >
+              Get an API Key
+            </Button>
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => {
+                setApiKeyDialogOpen(false);
+                setSettingsOpen(true);
+              }}
+            >
+              Enter API Key
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -141,7 +141,7 @@ export function SettingsPanel({
                     </div>
                     {!settings.rapidApiKey && (
                       <p className="text-[10px] mt-1 text-muted-foreground">
-                        Required to authorize analysis requests. RapidAPI acts as a secure gateway that manages your subscription, tracks your usage quota, and handles payment processing.
+                        Required to authorize analysis requests. RapidAPI acts as a secure gateway that tracks your usage quota and handles payment processing.
                       </p>
                     )}
                     {settings.rapidApiKey && quotaInfo && (

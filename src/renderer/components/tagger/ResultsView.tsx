@@ -20,12 +20,8 @@ function tagStrategyToMergeStrategy(s: SettingsState["tagStrategy"]): string {
 
 function getDisplayValues(analysis: AnalysisResult) {
   return {
-    genre: analysis.genres?.primary?.[0] ?? "-",
-    subGenre: analysis.genres?.secondary?.[0] ?? "-",
-    mood: analysis.moodsAndFeelings?.moods?.[0] ?? "-",
-    bpm: analysis.mixing?.bpm ?? "-",
-    key: analysis.mixing?.musicalKey ?? "-",
-    energy: analysis.moodsAndFeelings?.energy ?? analysis.moodsAndFeelings?.energyScore ?? "-",
+    genre: analysis.genres?.primary?.[0],
+    bpm: analysis.mixing?.bpm,
   };
 }
 
@@ -55,7 +51,7 @@ export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
   const errors = files.filter((f) => f.status === "error");
 
   return (
-    <div className="flex flex-col gap-4 p-1">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 p-1">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-foreground">
@@ -65,13 +61,9 @@ export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
             {completed.length} analyzed, {errors.length} error{errors.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <Button variant="secondary" size="sm" onClick={onClear}>
-          <RotateCcw className="mr-1.5 h-3 w-3" />
-          New Batch
-        </Button>
       </div>
 
-      <ScrollArea className="max-h-[360px]">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="space-y-2">
           {files.map((file) => {
             const values = file.result ? getDisplayValues(file.result) : null;
@@ -97,28 +89,24 @@ export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
                 </div>
 
                 {values ? (
-                  <>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                      <TagItem icon={Music2} label="Genre" value={String(values.genre)} />
-                      <TagItem icon={Layers} label="Sub-genre" value={String(values.subGenre)} />
-                      <TagItem icon={Palette} label="Mood" value={String(values.mood)} />
-                      <TagItem icon={Gauge} label="BPM" value={String(values.bpm)} />
-                      <TagItem icon={KeyRound} label="Key" value={String(values.key)} />
-                      <TagItem icon={Zap} label="Energy" value={String(values.energy)} />
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex gap-3 text-[10px] text-muted-foreground">
+                      {values.genre && <span>{values.genre}</span>}
+                      {values.bpm && <span>{values.bpm} BPM</span>}
                     </div>
-                    {file.filePath && (
+                    {file.filePath && settings?.tagStrategy === "keep" && (
                       <Button
                         variant="outline"
                         size="sm"
-                        className="mt-2"
+                        className="h-6 text-[10px] px-2"
                         onClick={() => handleWriteTags(file)}
                         disabled={writingId === file.id}
                       >
-                        <Tag className="mr-1.5 h-3 w-3" />
+                        <Tag className="mr-1 h-3 w-3" />
                         {writingId === file.id ? "Writing..." : "Write tags"}
                       </Button>
                     )}
-                  </>
+                  </div>
                 ) : file.error ? (
                   <p className="text-xs text-destructive">{file.error}</p>
                 ) : null}
@@ -131,20 +119,3 @@ export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
   );
 }
 
-function TagItem({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <Icon className="h-3 w-3 text-muted-foreground" />
-      <span className="text-[10px] text-muted-foreground">{label}:</span>
-      <span className="text-xs text-foreground">{value}</span>
-    </div>
-  );
-}

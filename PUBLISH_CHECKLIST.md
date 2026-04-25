@@ -86,16 +86,24 @@ For distribution outside the Mac App Store:
 - Add auto-update capability (e.g. electron-updater)
 - Add keyboard shortcuts for common actions
 
----
+### 10. **UX / UI Polish (Pre-Release)**
 
-## Priority Summary
+- **Processing State**
+  - Fix time estimation logic in `useProcessing` (currently hardcoded to 5-6s, but should reflect actual analysis time, e.g., ~30s per file).
+  - Remove redundant progress indicators (e.g., remove the progress bar in `ProcessingView` if `StatusBar` already has one, or vice-versa).
+  - Remove the "Stop AI" button from the main processing view.
+  - Remove or redesign the collapsible processed files list in `ProcessingView` (it doesn't scroll properly and clutters the UI).
 
-| Priority | Task |
-|----------|------|
-| **Critical** | Fix production API URL (use `app.isPackaged` or settings) |
-| **Critical** | Add app icon |
-| **High** | macOS code signing & notarization for distribution |
-| **High** | Test on all target platforms |
-| **Medium** | Error handling & UX improvements |
-| **Medium** | Update app metadata and README |
-| **Low** | Remove dead code and debug logs |
+- **Results State**
+  - Fix scrolling for the list of processed files (currently restricted by a hardcoded `max-h-[360px]`).
+  - Simplify the Results view to a high-level summary rather than a giant list of file cards with tags.
+  - Refactor the primary action button in the footer: instead of being disabled and saying "Select files to analyze", it should transform into the main "New Batch" button.
+
+- [x] Fix processing time estimation logic
+- [x] Clean up redundant progress indicators
+- [x] Remove "Stop AI" button
+- [x] Redesign/remove processed files log in ProcessingView
+- [x] Fix ResultsView scrolling and simplify the tag list
+- [x] Update footer button behavior in Results state
+- [ ] Add better feedback for unsupported files
+

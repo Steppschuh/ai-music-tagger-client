@@ -1,6 +1,16 @@
 import Store from "electron-store";
 import type { SettingsState } from "../shared/types";
 
+function checkIsLocalDev(): boolean {
+  if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev") {
+    return true;
+  }
+  if (process.versions && process.versions.electron) {
+    return (process as any).defaultApp === true;
+  }
+  return true;
+}
+
 const DEFAULT_SETTINGS: SettingsState = {
   rapidApiKey: "",
   autoSaveJson: false,
@@ -8,7 +18,7 @@ const DEFAULT_SETTINGS: SettingsState = {
   commentStrategy: "tags+summary",
   skipAlreadyAnalyzed: true,
   // Enabled by default during local development; always forced off in production.
-  mockAnalysis: process.env.NODE_ENV === "dev",
+  mockAnalysis: checkIsLocalDev(),
 };
 
 const store = new Store<SettingsState>({

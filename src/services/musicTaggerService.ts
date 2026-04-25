@@ -39,12 +39,22 @@ export async function hasBeenAnalyzed(audioPath: string): Promise<boolean> {
   return false;
 }
 
+function checkIsLocalDev(): boolean {
+  if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev") {
+    return true;
+  }
+  if (process.versions && process.versions.electron) {
+    return (process as any).defaultApp === true;
+  }
+  // If not electron, assume local dev for CLI usage
+  return true;
+}
+
 const RAPIDAPI_HOST = "ai-music-analyst.p.rapidapi.com";
 
-const API_BASE_URL =
-  process.env.NODE_ENV === "dev"
-    ? "http://localhost:3000"
-    : `https://${RAPIDAPI_HOST}`;
+const API_BASE_URL = checkIsLocalDev()
+  ? "http://localhost:3000"
+  : `https://${RAPIDAPI_HOST}`;
 
 
 const MAX_AUDIO_FILE_SIZE = 20 * 1024 * 1024; // 20MB
@@ -90,7 +100,7 @@ export async function analyzeSong(
     formData.append("prompt", prompt);
   }
 
-  const isLocalDev = process.env.NODE_ENV === "dev";
+  const isLocalDev = checkIsLocalDev();
   const { rapidApiKey, mockAnalysis } = getSettings();
   // Guard: mock mode is only honoured in dev builds, never in production.
   const useMock = isLocalDev && mockAnalysis;
@@ -139,7 +149,7 @@ export interface QuotaInfo {
 }
 
 export async function testApiKey(apiKey: string): Promise<QuotaInfo> {
-  const isLocalDev = process.env.NODE_ENV === "dev";
+  const isLocalDev = checkIsLocalDev();
   const { mockAnalysis } = getSettings();
   const useMock = isLocalDev && mockAnalysis;
   

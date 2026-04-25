@@ -1,14 +1,5 @@
-import { Sparkles, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Sparkles } from "lucide-react";
+import type { QueuedFile } from "@/types/tagger";
 import type { QueuedFile } from "@/types/tagger";
 
 interface ProcessingViewProps {
@@ -22,17 +13,10 @@ interface ProcessingViewProps {
 
 export function ProcessingView({
   currentFileName,
-  percentage,
   estimatedTime,
   lastInsight,
   files,
-  onStop,
 }: ProcessingViewProps) {
-  const [logOpen, setLogOpen] = useState(false);
-
-  const processedFiles = files.filter(
-    (f) => f.status === "completed" || f.status === "error"
-  );
   const isWritingTags = files.some((f) => f.status === "writing-tags");
 
 
@@ -48,13 +32,9 @@ export function ProcessingView({
         </p>
       </div>
 
-      {/* Progress */}
-      <div className="space-y-2">
-        <Progress value={percentage} className="h-2" />
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{percentage}% complete</span>
-          <span>{estimatedTime} remaining</span>
-        </div>
+      {/* Time remaining */}
+      <div className="text-center text-xs text-muted-foreground mt-2">
+        <span>{estimatedTime} remaining</span>
       </div>
 
       {/* Magic Insight */}
@@ -69,57 +49,6 @@ export function ProcessingView({
           <p className="text-xs text-foreground/80">{lastInsight}</p>
         </div>
       )}
-
-      {/* Log collapsible */}
-      <Collapsible open={logOpen} onOpenChange={setLogOpen}>
-        <CollapsibleTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-between text-xs text-muted-foreground"
-          >
-            Show Log ({processedFiles.length} processed)
-            {logOpen ? (
-              <ChevronUp className="h-3 w-3" />
-            ) : (
-              <ChevronDown className="h-3 w-3" />
-            )}
-          </Button>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <ScrollArea className="mt-2 max-h-32">
-            <div className="space-y-1">
-              {processedFiles.map((f) => (
-                <div
-                  key={f.id}
-                  className="flex items-center justify-between rounded px-2 py-1 text-xs"
-                >
-                  <span className="truncate text-foreground/70">{f.name}</span>
-                  <Badge
-                    variant="secondary"
-                    className={
-                      f.status === "completed"
-                        ? "bg-success/20 text-success text-[10px]"
-                        : "bg-destructive/20 text-destructive text-[10px]"
-                    }
-                  >
-                    {f.status === "completed" ? "Done" : "Error"}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        </CollapsibleContent>
-      </Collapsible>
-
-      {/* Stop button */}
-      <Button
-        variant="destructive"
-        className="w-full"
-        onClick={onStop}
-      >
-        Stop AI
-      </Button>
     </div>
   );
 }
