@@ -79,3 +79,10 @@ export async function selectDirectory(): Promise<string[]> {
   }
   return window.api.selectDirectory();
 }
+
+export async function expandPaths(paths: string[]): Promise<string[]> {
+  if (!window.api) {
+    throw new Error("Electron API not available");
+  }
+  return window.api.expandPaths(paths);
+}

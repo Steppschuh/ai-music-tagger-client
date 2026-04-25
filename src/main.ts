@@ -10,6 +10,7 @@ import {
   findAudioFiles,
   transformAnalysisToMetadata,
   hasBeenAnalyzed,
+  expandPaths,
 } from './services/musicTaggerService';
 import { getSettings, setSettings } from './services/settingsService';
 
@@ -81,6 +82,10 @@ ipcMain.handle('select-directory', async () => {
     return [];
   }
   return findAudioFiles(result.filePaths[0]);
+});
+
+ipcMain.handle('expand-paths', async (_, paths: string[]) => {
+  return expandPaths(paths);
 });
 
 ipcMain.handle('get-settings', () => {

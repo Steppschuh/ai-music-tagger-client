@@ -243,3 +243,27 @@ export function findAudioFiles(dirPath: string): string[] {
   walkDir(resolvedPath);
   return audioFiles;
 }
+
+export function expandPaths(paths: string[]): string[] {
+  const allFiles: string[] = [];
+  for (const p of paths) {
+    if (!p) continue;
+    try {
+      const resolved = path.resolve(p);
+      if (!fs.existsSync(resolved)) continue;
+
+      const stats = fs.statSync(resolved);
+      if (stats.isDirectory()) {
+        allFiles.push(...findAudioFiles(resolved));
+      } else if (stats.isFile()) {
+        const ext = path.extname(resolved).toLowerCase();
+        if (AUDIO_EXTENSIONS.includes(ext)) {
+          allFiles.push(resolved);
+        }
+      }
+    } catch (err) {
+      console.warn(`Failed to process path ${p}:`, err);
+    }
+  }
+  return [...new Set(allFiles)]; // Remove duplicates
+}

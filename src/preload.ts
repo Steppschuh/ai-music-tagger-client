@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer, webUtils } from 'electron';
 
 contextBridge.exposeInMainWorld('api', {
   analyzeFile: (filePath: string, prompt?: string) =>
@@ -25,6 +25,8 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('write-analysis-to-file', filePath, analysis),
   selectFiles: () => ipcRenderer.invoke('select-files'),
   selectDirectory: () => ipcRenderer.invoke('select-directory'),
+  expandPaths: (paths: string[]) => ipcRenderer.invoke('expand-paths', paths),
+  getPathForFile: (file: File) => webUtils.getPathForFile(file),
   getSettings: () => ipcRenderer.invoke('get-settings'),
   setSettings: (settings: unknown) =>
     ipcRenderer.invoke('set-settings', settings),

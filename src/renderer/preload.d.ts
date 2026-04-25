@@ -19,6 +19,8 @@ export interface ElectronAPI {
   writeAnalysisToFile: (filePath: string, analysis: unknown) => Promise<string>;
   selectFiles: () => Promise<string[]>;
   selectDirectory: () => Promise<string[]>;
+  expandPaths: (paths: string[]) => Promise<string[]>;
+  getPathForFile: (file: File) => string;
   getSettings: () => Promise<SettingsState>;
   setSettings: (settings: SettingsState) => Promise<void>;
 }
