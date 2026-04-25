@@ -3,6 +3,8 @@ import { contextBridge, ipcRenderer, webUtils } from 'electron';
 contextBridge.exposeInMainWorld('api', {
   analyzeFile: (filePath: string, prompt?: string) =>
     ipcRenderer.invoke('analyze-file', filePath, prompt),
+  testApiKey: (apiKey: string) =>
+    ipcRenderer.invoke('test-api-key', apiKey),
   readTags: (filePath: string) => ipcRenderer.invoke('read-tags', filePath),
   writeTags: (
     filePath: string,
@@ -30,4 +32,5 @@ contextBridge.exposeInMainWorld('api', {
   getSettings: () => ipcRenderer.invoke('get-settings'),
   setSettings: (settings: unknown) =>
     ipcRenderer.invoke('set-settings', settings),
+  openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
 });

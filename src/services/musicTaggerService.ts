@@ -130,6 +130,64 @@ export async function analyzeSong(
   return response.json();
 }
 
+export interface QuotaInfo {
+  requestsRemaining?: number;
+  requestsLimit?: number;
+  requestsReset?: number;
+  valid: boolean;
+  message?: string;
+}
+
+export async function testApiKey(apiKey: string): Promise<QuotaInfo> {
+  const isLocalDev = process.env.NODE_ENV === "dev";
+  const { mockAnalysis } = getSettings();
+  const useMock = isLocalDev && mockAnalysis;
+  
+  if (!apiKey) {
+    return { valid: false, message: "No API key provided." };
+  }
+  
+  const headers: Record<string, string> = {
+    "x-rapidapi-host": RAPIDAPI_HOST,
+    "x-rapidapi-key": apiKey,
+  };
+  
+  let apiUrl = `${API_BASE_URL}/analyze`;
+  if (useMock) {
+    apiUrl += `Mock`;
+  }
+  
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers,
+    });
+    
+    if (response.status === 403) {
+      const body = await response.json().catch(() => ({}));
+      return { 
+        valid: false, 
+        message: body.message || "Invalid API key or not subscribed to the API." 
+      };
+    }
+    
+    const requestsLimit = response.headers.get("x-ratelimit-requests-limit");
+    const requestsRemaining = response.headers.get("x-ratelimit-requests-remaining");
+    const requestsReset = response.headers.get("x-ratelimit-requests-reset");
+    
+    return {
+      valid: true,
+      requestsLimit: requestsLimit ? parseInt(requestsLimit, 10) : undefined,
+      requestsRemaining: requestsRemaining ? parseInt(requestsRemaining, 10) : undefined,
+      requestsReset: requestsReset ? parseInt(requestsReset, 10) : undefined,
+      message: "API key is valid."
+    };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    return { valid: false, message: `Request failed: ${msg}` };
+  }
+}
+
 export async function readMetadata(audioPath: string): Promise<any> {
   const resolved = validateFilePath(audioPath);
   return NodeID3.read(resolved);

@@ -2,6 +2,13 @@ import type { AnalysisResult, SettingsState } from '../shared/types';
 
 export interface ElectronAPI {
   analyzeFile: (filePath: string, prompt?: string) => Promise<AnalysisResult>;
+  testApiKey: (apiKey: string) => Promise<{
+    requestsRemaining?: number;
+    requestsLimit?: number;
+    requestsReset?: number;
+    valid: boolean;
+    message?: string;
+  }>;
   readTags: (filePath: string) => Promise<unknown>;
   writeTags: (
     filePath: string,
@@ -23,6 +30,7 @@ export interface ElectronAPI {
   getPathForFile: (file: File) => string;
   getSettings: () => Promise<SettingsState>;
   setSettings: (settings: SettingsState) => Promise<void>;
+  openExternal: (url: string) => Promise<void>;
 }
 
 declare global {

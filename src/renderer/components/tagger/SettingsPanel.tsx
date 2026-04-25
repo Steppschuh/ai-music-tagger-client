@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import packageJson from "../../../../package.json";
 import {
   Sheet,
@@ -38,6 +38,35 @@ export function SettingsPanel({
   onUpdateSetting,
 }: SettingsPanelProps) {
   const [showKey, setShowKey] = useState(false);
+  const [testingKey, setTestingKey] = useState(false);
+  const [quotaInfo, setQuotaInfo] = useState<{
+    requestsRemaining?: number;
+    requestsLimit?: number;
+    requestsReset?: number;
+    valid: boolean;
+    message?: string;
+  } | null>(null);
+
+  const handleTestKey = async () => {
+    if (!settings.rapidApiKey) return;
+    setTestingKey(true);
+    setQuotaInfo(null);
+    try {
+      const result = await window.api.testApiKey(settings.rapidApiKey);
+      setQuotaInfo(result);
+    } catch (err) {
+      setQuotaInfo({ valid: false, message: "Test failed." });
+    } finally {
+      setTestingKey(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!open) {
+      setQuotaInfo(null);
+      setTestingKey(false);
+    }
+  }, [open]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -49,19 +78,19 @@ export function SettingsPanel({
           <SheetTitle className="text-foreground text-left">Settings</SheetTitle>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 pr-2 pb-8">
+        <div className="min-h-0 flex-1 px-2 pb-8">
           <Accordion type="single" collapsible defaultValue="account" className="w-full">
             
             {/* Account & Connection */}
             <AccordionItem value="account" className="border-b-0">
               <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:no-underline py-3">
-                Account & Connection
+                Account
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-4 pb-4">
+                <div className="space-y-4 pb-4 px-1">
                   <div>
                     <Label htmlFor="api-key" className="text-xs text-foreground">
-                      RapidAPI Key
+                      API Key
                     </Label>
                     <div className="mt-1 flex gap-2">
                       <div className="relative flex-1">
@@ -69,10 +98,11 @@ export function SettingsPanel({
                           id="api-key"
                           type={showKey ? "text" : "password"}
                           value={settings.rapidApiKey}
-                          onChange={(e) =>
-                            onUpdateSetting("rapidApiKey", e.target.value)
-                          }
-                          placeholder="Enter your API key"
+                          onChange={(e) => {
+                            onUpdateSetting("rapidApiKey", e.target.value);
+                            setQuotaInfo(null);
+                          }}
+                          placeholder="Paste your RapidAPI key"
                           className="pr-9 text-xs"
                         />
                         <Button
@@ -88,15 +118,42 @@ export function SettingsPanel({
                           )}
                         </Button>
                       </div>
-                      <Button variant="secondary" size="sm" className="text-xs">
-                        Test
-                      </Button>
+                      {!settings.rapidApiKey ? (
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="text-xs"
+                          onClick={() => window.api.openExternal("https://ai-music-tagger.web.app/#get-started")}
+                        >
+                          Get a key
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="text-xs"
+                          onClick={handleTestKey}
+                          disabled={testingKey || quotaInfo?.valid}
+                        >
+                          {testingKey ? "Testing..." : (quotaInfo?.valid ? "Valid" : "Test")}
+                        </Button>
+                      )}
                     </div>
+                    {!settings.rapidApiKey && (
+                      <p className="text-[10px] mt-1 text-muted-foreground">
+                        Required to authorize analysis requests. RapidAPI acts as a secure gateway that manages your subscription, tracks your usage quota, and handles payment processing.
+                      </p>
+                    )}
+                    {settings.rapidApiKey && quotaInfo && (
+                      <p className={`text-[10px] mt-1 ${quotaInfo.valid ? 'text-muted-foreground' : 'text-destructive'}`}>
+                        {quotaInfo.valid ? (
+                          `Key is valid. Your quota allows for ${quotaInfo.requestsRemaining} more requests and resets in ${Math.max(1, Math.ceil((quotaInfo.requestsReset || 0) / (60 * 60 * 24)))} days.`
+                        ) : (
+                          quotaInfo.message || "Invalid API key."
+                        )}
+                      </p>
+                    )}
                   </div>
-
-                  <Button variant="outline" size="sm" className="w-full text-xs">
-                    Login / Sign Up with Cloud
-                  </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -109,7 +166,7 @@ export function SettingsPanel({
                 Analysis
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-5 pb-4">
+                <div className="space-y-5 pb-4 px-1">
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="auto-json" className="text-xs text-foreground">
@@ -157,7 +214,7 @@ export function SettingsPanel({
                 Meta Data
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-5 pb-4">
+                <div className="space-y-5 pb-4 px-1">
                   <div>
                     <Label className="mb-2 block text-xs text-foreground">
                       Tag Strategy
@@ -245,7 +302,7 @@ export function SettingsPanel({
                     Developer
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="space-y-4 pb-4">
+                    <div className="space-y-4 pb-4 px-1">
                       <div className="flex items-center justify-between">
                         <div>
                           <Label htmlFor="mock-analysis" className="text-xs text-foreground">
@@ -280,7 +337,7 @@ export function SettingsPanel({
                 About
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-4 pb-4">
+                <div className="space-y-4 pb-4 px-1">
                   <div className="flex items-center justify-between">
                     <div>
                       <Label className="text-xs text-foreground">
@@ -292,10 +349,8 @@ export function SettingsPanel({
                     </div>
                   </div>
                   
-                  <Button variant="outline" size="sm" className="w-full text-xs" asChild>
-                    <a href="mailto:contact@steppschuh.net">
-                      Contact Us
-                    </a>
+                  <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => window.api.openExternal("mailto:contact@steppschuh.net")}>
+                    Contact Us
                   </Button>
                 </div>
               </AccordionContent>

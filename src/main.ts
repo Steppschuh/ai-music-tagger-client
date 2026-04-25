@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import {
@@ -11,6 +11,7 @@ import {
   transformAnalysisToMetadata,
   hasBeenAnalyzed,
   expandPaths,
+  testApiKey,
 } from './services/musicTaggerService';
 import { getSettings, setSettings } from './services/settingsService';
 
@@ -22,6 +23,14 @@ if (started) {
 // IPC Handlers
 ipcMain.handle('analyze-file', async (_, filePath: string, prompt?: string) => {
   return analyzeSong(filePath, prompt);
+});
+
+ipcMain.handle('test-api-key', async (_, apiKey: string) => {
+  return testApiKey(apiKey);
+});
+
+ipcMain.handle('open-external', async (_, url: string) => {
+  return shell.openExternal(url);
 });
 
 ipcMain.handle('read-tags', async (_, filePath: string) => {
