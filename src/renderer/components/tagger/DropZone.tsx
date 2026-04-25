@@ -92,7 +92,7 @@ export function DropZone({ onFilesAdded }: DropZoneProps) {
   return (
     <div 
       className={cn(
-        "flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-all duration-200",
+        "flex flex-1 flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-all duration-200",
         isDragging 
           ? "border-primary bg-primary/5 scale-[1.02] shadow-md" 
           : "border-muted-foreground/25 hover:border-muted-foreground/40",

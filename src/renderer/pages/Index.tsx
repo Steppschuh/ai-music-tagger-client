@@ -84,7 +84,7 @@ const Index = () => {
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       {/* Main content area */}
-      <div className="min-h-0 flex-1 overflow-auto p-4 md:p-6">
+      <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4 md:p-6">
           {view === "start" && (
             <>
               <DropZone onFilesAdded={handleAddFiles} />
