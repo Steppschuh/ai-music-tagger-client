@@ -1,5 +1,6 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import packageJson from "../../../../package.json";
 import {
   Sheet,
   SheetContent,
@@ -48,7 +49,7 @@ export function SettingsPanel({
           <SheetTitle className="text-foreground text-left">Settings</SheetTitle>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 pr-2 pb-6">
+        <div className="min-h-0 flex-1 pr-2 pb-8">
           <Accordion type="single" collapsible defaultValue="account" className="w-full">
             
             {/* Account & Connection */}
@@ -270,6 +271,35 @@ export function SettingsPanel({
                 </AccordionItem>
               </>
             )}
+
+            <Separator />
+
+            {/* About */}
+            <AccordionItem value="about" className="border-b-0">
+              <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:no-underline py-3">
+                About
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-xs text-foreground">
+                        Version
+                      </Label>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        v{packageJson.version}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <Button variant="outline" size="sm" className="w-full text-xs" asChild>
+                    <a href="mailto:contact@steppschuh.net">
+                      Contact Us
+                    </a>
+                  </Button>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
             
           </Accordion>
         </div>

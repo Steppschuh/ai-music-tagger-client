@@ -121,7 +121,7 @@ export function DropZone({ onFilesAdded, onSettingsClick }: DropZoneProps) {
         Drag & drop audio files or folders here
       </p>
       <p className="mb-4 text-xs text-muted-foreground">
-        Supported: {SUPPORTED_FORMATS.map((f) => f.replace(".", "").toUpperCase()).join(", ")} up to 20MB per file
+        Up to 20MB per file. ID3 tags can only be written to MP3 files.
       </p>
       <div className="flex gap-2">
         <Button
