@@ -28,9 +28,10 @@ interface ResultsViewProps {
   files: QueuedFile[];
   onClear: () => void;
   settings?: SettingsState;
+  onRetryErrors?: () => void;
 }
 
-export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
+export function ResultsView({ files, onClear, settings, onRetryErrors }: ResultsViewProps) {
   const [writingId, setWritingId] = useState<string | null>(null);
   const mergeStrategy = settings ? tagStrategyToMergeStrategy(settings.tagStrategy) : "keep-existing";
 
@@ -82,18 +83,31 @@ export function ResultsView({ files, onClear, settings }: ResultsViewProps) {
             {completed.length} analyzed, {errors.length} error{errors.length !== 1 ? "s" : ""}
           </p>
         </div>
-        {completed.length > 1 && settings?.tagStrategy === "keep" && (
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="h-8 shadow-md"
-            onClick={handleWriteAll}
-            disabled={writingId !== null}
-          >
-            <Tag className="mr-2 h-3.5 w-3.5" />
-            Write all tags
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {errors.length > 0 && onRetryErrors && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 shadow-md border-destructive/50 text-destructive hover:bg-destructive/10"
+              onClick={onRetryErrors}
+            >
+              <RotateCcw className="mr-2 h-3.5 w-3.5" />
+              Retry {errors.length} Error{errors.length !== 1 ? "s" : ""}
+            </Button>
+          )}
+          {completed.length > 1 && settings?.tagStrategy === "keep" && (
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="h-8 shadow-md"
+              onClick={handleWriteAll}
+              disabled={writingId !== null}
+            >
+              <Tag className="mr-2 h-3.5 w-3.5" />
+              Write all tags
+            </Button>
+          )}
+        </div>
       </header>
 
       <div className="flex-1 flex flex-col min-h-0">

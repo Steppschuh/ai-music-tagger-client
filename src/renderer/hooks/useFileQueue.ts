@@ -84,6 +84,16 @@ export function useFileQueue() {
     );
   }, []);
 
+  const retryErrors = useCallback(() => {
+    setFiles((prev) =>
+      prev.map((f) =>
+        f.status === "error"
+          ? { ...f, status: "pending", error: undefined }
+          : f
+      )
+    );
+  }, []);
+
   const pendingCount = files.filter((f) => f.status === "pending").length;
   const completedCount = files.filter((f) => f.status === "completed").length;
   const errorCount = files.filter((f) => f.status === "error").length;
@@ -95,6 +105,7 @@ export function useFileQueue() {
     updateFile,
     clearFiles,
     resetStatuses,
+    retryErrors,
     pendingCount,
     completedCount,
     errorCount,

@@ -7,12 +7,12 @@
   "private": true,
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
+    "package": "npm run build:cli && electron-forge package",
+    "make": "npm run build:cli && electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx src forge.config.ts vite.*.ts tailwind.config.ts",
     "cli": "ts-node --skip-project bin/cli.ts",
-    "build:cli": "tsc --outDir . --rootDir . --module commonjs --target ES2020 --esModuleInterop --skipLibCheck bin/cli.ts"
+    "build:cli": "tsc bin/cli.ts --outDir . --rootDir . --module commonjs --target ES2020 --esModuleInterop --skipLibCheck --ignoreConfig"
   },
   "keywords": [],
   "author": "steppschuh",
@@ -39,7 +39,7 @@
     "eslint-plugin-import": "^2.32.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "typescript": "~4.5.4",
+    "typescript": "^6.0.3",
     "vite": "^8.0.9"
   },
   "dependencies": {

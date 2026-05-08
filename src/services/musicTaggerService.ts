@@ -3,7 +3,6 @@ import { AUDIO_EXTENSIONS } from "../shared/types";
 import { app } from "electron";
 import * as fs from "fs";
 import * as path from "path";
-// @ts-expect-error - node-id3 may not have TypeScript types
 import NodeID3 from "node-id3";
 import {
   transformAnalysisToMetadata as transformToMetadata,
@@ -124,22 +123,41 @@ export async function analyzeSong(
     // Route to the mock endpoint to avoid spending real API tokens during dev.
     apiUrl += `Mock`;
   }
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers,
-    body: formData,
-  });
+  const maxRetries = 2;
+  let attempt = 0;
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new Error(
-      `Backend request failed with status ${response.status}${
-        body ? `: ${body}` : ""
-      }`
-    );
+  while (true) {
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers,
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => "");
+        const errorMsg = `Backend request failed with status ${response.status}${
+          body ? `: ${body}` : ""
+        }`;
+
+        // Don't auto-retry 4xx client errors (except 429 Too Many Requests)
+        if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+          throw new Error(errorMsg);
+        }
+
+        throw new Error(errorMsg);
+      }
+
+      return await response.json();
+    } catch (err: any) {
+      if (attempt >= maxRetries) {
+        throw err;
+      }
+      attempt++;
+      // Wait before retrying (e.g. 2s, 4s)
+      await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+    }
   }
-
-  return response.json();
 }
 
 export interface QuotaInfo {

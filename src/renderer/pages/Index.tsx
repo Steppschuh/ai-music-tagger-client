@@ -30,6 +30,7 @@ const Index = () => {
     removeFile,
     updateFile,
     clearFiles,
+    retryErrors,
     pendingCount,
   } = useFileQueue();
 
@@ -55,6 +56,11 @@ const Index = () => {
 
   const handleNewBatch = () => {
     clearFiles();
+    resetToStart();
+  };
+
+  const handleRetryErrors = () => {
+    retryErrors();
     resetToStart();
   };
 
@@ -99,7 +105,7 @@ const Index = () => {
       {/* Main content area */}
       <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {view === "start" && (
-            <div className="flex-1 overflow-y-auto p-4 md:p-6">
+            <div className="flex-1 flex flex-col overflow-y-auto p-4 md:p-6">
               <DropZone 
                 onFilesAdded={handleAddFiles} 
                 onSettingsClick={() => setSettingsOpen(true)}
@@ -108,7 +114,7 @@ const Index = () => {
           )}
 
           {view === "processing" && (
-            <div className="flex-1 overflow-y-auto p-4 md:p-6">
+            <div className="flex-1 flex flex-col overflow-y-auto p-4 md:p-6">
               <ProcessingView
                 currentFileName={currentFileName}
                 estimatedTime={estimateTimeRemaining(currentIndex)}
@@ -120,7 +126,12 @@ const Index = () => {
 
           {view === "results" && (
             <div className="flex-1 flex flex-col min-h-0">
-              <ResultsView files={files} onClear={handleNewBatch} settings={settings} />
+              <ResultsView 
+                files={files} 
+                onClear={handleNewBatch} 
+                settings={settings} 
+                onRetryErrors={handleRetryErrors} 
+              />
             </div>
           )}
       </main>
