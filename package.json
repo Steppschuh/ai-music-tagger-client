@@ -2,7 +2,7 @@
   "name": "ai-music-tagger",
   "productName": "AI Music Tagger",
   "version": "1.0.0",
-  "description": "Professional-grade AI-powered music metadata enrichment tool.",
+  "description": "AI-powered music metadata enrichment tool.",
   "main": ".vite/build/main.js",
   "private": true,
   "scripts": {
