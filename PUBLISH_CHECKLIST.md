@@ -6,14 +6,17 @@
 
 - **App Icon** — Add icon assets for macOS, Windows, and Linux and configure `packagerConfig.icon` in `forge.config.ts`
 
-- [ ] Add app icon and configure packagerConfig
+- [x] Add app icon and configure packagerConfig
 
 ### 3. **Code Signing & Notarization (macOS)**
 
 For distribution outside the Mac App Store:
 
-- [ ] Set up code signing for macOS
-- [ ] Set up notarization for macOS
+- [x] Set up code signing for macOS
+- [x] Set up notarization for macOS
+
+> [!TIP]
+> Credentials for macOS signing and notarization are securely stored locally in `.env`. The project uses a zero-dependency env-loader in `forge.config.ts` to read them at build-time. For a new machine/setup, copy `.env.example` to `.env` and fill in the values.
 
 ### 4. **Cross-platform Testing**
 

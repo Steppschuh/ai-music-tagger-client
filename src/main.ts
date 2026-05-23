@@ -112,6 +112,9 @@ const createWindow = () => {
     height: 600,
     minWidth: 500,
     minHeight: 500,
+    icon: app.isPackaged
+      ? path.join(process.resourcesPath, 'assets/icon.png')
+      : path.join(__dirname, '../../assets/icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

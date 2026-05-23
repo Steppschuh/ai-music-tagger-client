@@ -143,16 +143,45 @@ async function analyzeSong(audioPath, prompt) {
         // Route to the mock endpoint to avoid spending real API tokens during dev.
         apiUrl += `Mock`;
     }
-    const response = await fetch(apiUrl, {
-        method: "POST",
-        headers,
-        body: formData,
-    });
-    if (!response.ok) {
-        const body = await response.text().catch(() => "");
-        throw new Error(`Backend request failed with status ${response.status}${body ? `: ${body}` : ""}`);
+    const maxRetries = 2;
+    let attempt = 0;
+    let lastError = null;
+    while (attempt <= maxRetries) {
+        let response;
+        try {
+            response = await fetch(apiUrl, {
+                method: "POST",
+                headers,
+                body: formData,
+            });
+        }
+        catch (err) {
+            lastError = err;
+            attempt++;
+            // Wait before retrying (e.g. 2s, 4s)
+            if (attempt <= maxRetries) {
+                await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+            }
+            continue;
+        }
+        if (!response.ok) {
+            const body = await response.text().catch(() => "");
+            const errorMsg = `Backend request failed with status ${response.status}${body ? `: ${body}` : ""}`;
+            lastError = new Error(errorMsg);
+            const isRetryable = response.status === 429 || response.status >= 500;
+            if (!isRetryable) {
+                throw lastError; // Client errors (except 429) fail immediately
+            }
+            attempt++;
+            // Wait before retrying (e.g. 2s, 4s)
+            if (attempt <= maxRetries) {
+                await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+            }
+            continue;
+        }
+        return await response.json();
     }
-    return response.json();
+    throw lastError || new Error("Backend request failed: Maximum retries reached");
 }
 async function testApiKey(apiKey) {
     const isLocalDev = checkIsLocalDev();

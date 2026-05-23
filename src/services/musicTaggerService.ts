@@ -125,39 +125,48 @@ export async function analyzeSong(
   }
   const maxRetries = 2;
   let attempt = 0;
+  let lastError: Error | null = null;
 
-  while (true) {
+  while (attempt <= maxRetries) {
+    let response: Response;
     try {
-      const response = await fetch(apiUrl, {
+      response = await fetch(apiUrl, {
         method: "POST",
         headers,
         body: formData,
       });
-
-      if (!response.ok) {
-        const body = await response.text().catch(() => "");
-        const errorMsg = `Backend request failed with status ${response.status}${
-          body ? `: ${body}` : ""
-        }`;
-
-        // Don't auto-retry 4xx client errors (except 429 Too Many Requests)
-        if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-          throw new Error(errorMsg);
-        }
-
-        throw new Error(errorMsg);
-      }
-
-      return await response.json();
     } catch (err: any) {
-      if (attempt >= maxRetries) {
-        throw err;
+      lastError = err;
+      attempt++;
+      // Wait before retrying (e.g. 2s, 4s)
+      if (attempt <= maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+      }
+      continue;
+    }
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      const errorMsg = `Backend request failed with status ${response.status}${
+        body ? `: ${body}` : ""
+      }`;
+      lastError = new Error(errorMsg);
+      const isRetryable = response.status === 429 || response.status >= 500;
+      if (!isRetryable) {
+        throw lastError; // Client errors (except 429) fail immediately
       }
       attempt++;
       // Wait before retrying (e.g. 2s, 4s)
-      await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+      if (attempt <= maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+      }
+      continue;
     }
+
+    return await response.json();
   }
+
+  throw lastError || new Error("Backend request failed: Maximum retries reached");
 }
 
 export interface QuotaInfo {

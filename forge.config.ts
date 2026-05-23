@@ -6,14 +6,44 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env if present.
+// Note: dotenv will never overwrite existing shell or CI/CD environment variables.
+dotenv.config();
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     executableName: 'ai-music-tagger',
+    icon: './assets/icon',
     extraResource: [
       'bin/cli.js', // compiled CLI script bundled into resources/
+      'assets',     // assets folder bundled into resources/
     ],
+    // macOS Code Signing configuration (conditional)
+    ...(process.env.APPLE_SIGNING_IDENTITY ? {
+      osxSign: {
+        identity: process.env.APPLE_SIGNING_IDENTITY,
+        optionsForFile: (filePath: string) => {
+          return {
+            entitlements: filePath.includes('.app/')
+              ? './assets/entitlements.mac.inherit.plist'
+              : './assets/entitlements.mac.plist',
+            hardenedRuntime: true,
+            signatureFlags: 'library',
+          };
+        },
+      },
+    } : {}),
+    // macOS Notarization configuration (conditional)
+    ...(process.env.APPLE_ID && process.env.APPLE_PASSWORD && process.env.APPLE_TEAM_ID ? {
+      osxNotarize: {
+        appleId: process.env.APPLE_ID,
+        appleIdPassword: process.env.APPLE_PASSWORD,
+        teamId: process.env.APPLE_TEAM_ID,
+      },
+    } : {}),
   },
   rebuildConfig: {},
   makers: [
