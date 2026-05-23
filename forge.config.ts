@@ -6,30 +6,11 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as dotenv from 'dotenv';
 
-
-// Simple, zero-dependency .env loader for build time
-const envPath = path.resolve(__dirname, '.env');
-if (fs.existsSync(envPath)) {
-  const envContent = fs.readFileSync(envPath, 'utf8');
-  envContent.split(/\r?\n/).forEach((line) => {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) return;
-    const parts = trimmed.split('=');
-    if (parts.length >= 2) {
-      const key = parts[0].trim();
-      let value = parts.slice(1).join('=').trim();
-      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1);
-      }
-      if (!(key in process.env)) {
-        process.env[key] = value;
-      }
-    }
-  });
-}
+// Load environment variables from .env if present.
+// Note: dotenv will never overwrite existing shell or CI/CD environment variables.
+dotenv.config();
 
 const config: ForgeConfig = {
   packagerConfig: {
