@@ -24,7 +24,9 @@ if (fs.existsSync(envPath)) {
       if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
         value = value.slice(1, -1);
       }
-      process.env[key] = value;
+      if (!(key in process.env)) {
+        process.env[key] = value;
+      }
     }
   });
 }
@@ -41,10 +43,15 @@ const config: ForgeConfig = {
     ...(process.env.APPLE_SIGNING_IDENTITY ? {
       osxSign: {
         identity: process.env.APPLE_SIGNING_IDENTITY,
-        'hardened-runtime': true,
-        entitlements: './assets/entitlements.mac.plist',
-        'entitlements-inherit': './assets/entitlements.mac.inherit.plist',
-        'signature-flags': 'library',
+        optionsForFile: (filePath: string) => {
+          return {
+            entitlements: filePath.includes('.app/')
+              ? './assets/entitlements.mac.inherit.plist'
+              : './assets/entitlements.mac.plist',
+            hardenedRuntime: true,
+            signatureFlags: 'library',
+          };
+        },
       },
     } : {}),
     // macOS Notarization configuration (conditional)
