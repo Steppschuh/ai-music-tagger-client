@@ -1,31 +1,42 @@
 # AI Music Tagger Client
 
-An advanced desktop application built with Electron and React that leverages AI to analyze and tag your music collection. This client provides a powerful interface for scanning audio files, generating detailed metadata (genre, mood, BPM, etc.), and writing that data directly to your music's ID3 tags.
+A desktop companion and CLI utility that leverages AI to analyze audio files, extract detailed music metadata, and write it directly to your music library's ID3 tags.
 
-## 🚀 Key Features
+The AI analysis is performed by the [AI Music Tagger API](https://ai-music-tagger.web.app). An API key is required to use this service, as the underlying audio analysis requires significant compute resources and cannot be provided for free.
 
-- **AI-Powered Analysis**: Deep analysis of audio files to extract meaningful metadata.
-- **Batch Processing**: Select multiple files or entire directories for automated tagging.
-- **Metadata Management**: Read and write ID3 tags directly to files (MP3, FLAC, M4A, and more).
-- **Customizable Prompts**: Fine-tune the AI analysis with custom prompts for specific tagging needs.
-- **Modern UI**: A sleek, responsive dashboard built with React, Shadcn-ui, and Tailwind CSS.
-- **Intelligent Merging**: Choose how to merge AI results with your existing file tags.
-- **Cross-Platform**: Designed to work on macOS, Windows, and Linux.
+> [!NOTE]
+> **Project Status & Expectations**
+> This is a personal side project in its early development stages. **The majority of this codebase was written by AI coding assistants** under human direction. Please expect rough edges and don't treat it as a quality reference for production code.
+
+---
+
+## 🚀 Features
+
+- **AI-Powered Analysis**: Extracts descriptive metadata (genres, moods, vibes, lyrical themes, ...) and structural/performance details (phrasing type, suitable cue points, and multi-stem audio suitability).
+- **Direct ID3 Tagging**: Writes analyzed metadata directly to files (MP3, FLAC, M4A, etc.) using `node-id3`.
+- **Sidecar JSON Caching**: Automatically saves the high-fidelity AI output in a `-analysis.json` file next to each audio track. This prevents duplicate API calls and lets you re-tag your music with different strategies without re-analyzing.
+- **Dual Interfaces**: Contains both a cross-platform desktop UI (Electron & React) and a developer-friendly Command Line Interface (CLI).
+- **Customizable Tag Strategies**: Configure how the app merges AI findings with your existing tags (e.g. keeping existing tags, merging new ones, or complete overwrites).
+- **Comment Strategies**: Choose what to write to the ID3 Comment field: standard summaries, structured hashtags, raw tags, or combined options.
+
+---
 
 ## 🛠 Technology Stack
 
-- **Framework**: [Electron](https://www.electronjs.org/) for the desktop shell.
-- **Frontend**: [React](https://react.dev/) + [Vite](https://vitejs.dev/) for a modern development experience.
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/) for beautiful, responsive components.
-- **State Management**: [TanStack Query](https://tanstack.com/query/latest) for handling asynchronous analysis tasks.
-- **Metadata Handling**: [node-id3](https://github.com/Zazama/node-id3) for robust file tagging.
-- **Build Tooling**: [Electron Forge](https://www.electronforge.io/) for packaging and distribution.
+- **Desktop Shell**: [Electron](https://www.electronjs.org/) (Main process handles files and API requests for security and stability)
+- **Frontend**: [React](https://react.dev/) + [Vite](https://vitejs.dev/) + [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
+- **CLI Tooling**: [yargs](https://github.com/yargs/yargs) + [ts-node](https://typestrong.org/ts-node/)
+- **State & Validation**: [TanStack Query](https://tanstack.com/query/latest) + [Zod](https://zod.dev/)
+- **Audio Logic**: [node-id3](https://github.com/Zazama/node-id3) for tag operations
+- **Distribution**: [Electron Forge](https://www.electronforge.io/) for bundling and code signing
+
+---
 
 ## 📦 Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v16.x or later recommended)
+- [Node.js](https://nodejs.org/) (v18.x or later recommended)
 - [npm](https://www.npmjs.com/)
 
 ### Installation
@@ -41,44 +52,67 @@ An advanced desktop application built with Electron and React that leverages AI 
    npm install
    ```
 
-3. (Optional) Run the renderer in development mode:
-   ```bash
-   npm start
-   ```
+3. Configure your environment variables:
+   Copy `.env.example` to `.env` and fill in your RapidAPI credentials and settings (required for local builds/runs).
 
-### Development
+---
 
+## 💻 Running the App
+
+### Desktop Interface (GUI)
 Start the application in development mode with hot-reloading:
-
 ```bash
 npm start
 ```
 
-## 🏗 Building & Distribution
+### Command Line Interface (CLI)
+Run the CLI using `ts-node`:
+```bash
+# Display help and commands
+npm run cli -- --help
 
-To package the application for your current platform:
+# Analyze a single track or folder
+npm run cli -- analyze "/path/to/music/track.mp3"
+```
 
+---
+
+## 🏗 Building & Packaging
+
+To bundle the desktop application for your host platform:
 ```bash
 npm run package
 ```
 
-To create distributables (installers like .dmg, .exe, .deb):
-
+To build installers and distributables (e.g. `.dmg` on macOS, `.exe` on Windows):
 ```bash
 npm run make
 ```
 
-> [!NOTE]
-> For macOS distribution, you will need to configure code signing and notarization in `forge.config.ts` using your Apple Developer credentials.
+> [!TIP]
+> Code signing and notarization credentials for macOS are parsed from your local `.env` file during the build process using custom env-loaders in `forge.config.ts`.
 
-## 📁 Project Structure
+---
 
-- `src/main.ts`: Electron main process logic.
-- `src/preload.ts`: Bridge between Electron and the React frontend.
-- `src/services/`: Core logic for music analysis and tagging.
-- `src/renderer/`: The React frontend application.
-- `forge.config.ts`: Configuration for Electron Forge and Vite.
-- `PUBLISH_CHECKLIST.md`: Current roadmap and publication status.
+## 📁 Key Directories & Files
+
+- `src/main.ts`: Electron Main process (file operations, security, IPC).
+- `src/preload.ts`: IPC bridge, keeping file/network operations strictly isolated.
+- `src/renderer/`: The React-based dashboard UI.
+- `src/services/`: Core logic (tagging, schemas, settings) shared by both GUI and CLI.
+- `bin/cli.ts`: Entry point for the CLI tool.
+- `AGENTS.md`: Technical ground truth for developers and AI assistants.
+- `MEMORY.md`: Chronological log of major architectural decisions and integration details.
+
+---
+
+## 🤖 Developer & AI Agent Context
+
+This repository is optimized for AI-assisted development. If you are working on this project with an AI assistant, direct them to read:
+1. [AGENTS.md](file:///Users/steppschuh/Documents/Projects/Steppschuh/ai-music-tagger-client-electron/AGENTS.md) — The strict rules, naming standards, and constraints of the repository.
+2. [MEMORY.md](file:///Users/steppschuh/Documents/Projects/Steppschuh/ai-music-tagger-client-electron/MEMORY.md) — Architectural decisions, backend specifications, and known edge-cases.
+
+---
 
 ## 📄 License
 

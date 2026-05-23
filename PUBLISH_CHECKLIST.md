@@ -1,39 +1,40 @@
 # Publication Readiness Checklist
 
-## Open Tasks Before Publication
+This document tracks outstanding tasks, platform requirements, and configurations needed before releasing the first official version of the AI Music Tagger Client.
 
-### 2. **App Branding**
+---
 
-- **App Icon** — Add icon assets for macOS, Windows, and Linux and configure `packagerConfig.icon` in `forge.config.ts`
+## Completed Tasks
 
-- [x] Add app icon and configure packagerConfig
+### ✅ App Branding
+- [x] Create app icon assets for macOS (`.icns`), Windows (`.ico`), and Linux (`.png`).
+- [x] Configure `packagerConfig.icon` and Vite plugins in `forge.config.ts`.
 
-### 3. **Code Signing & Notarization (macOS)**
-
-For distribution outside the Mac App Store:
-
-- [x] Set up code signing for macOS
-- [x] Set up notarization for macOS
+### ✅ macOS Code Signing & Notarization
+- [x] Set up macOS code signing entitlements and packaging configurations in `forge.config.ts`.
+- [x] Integrate safe environment-variable loading for Mac developer certificates and passwords in local builds.
 
 > [!TIP]
 > Credentials for macOS signing and notarization are securely stored locally in `.env`. The project uses a zero-dependency env-loader in `forge.config.ts` to read them at build-time. For a new machine/setup, copy `.env.example` to `.env` and fill in the values.
 
-### 4. **Cross-platform Testing**
+---
 
-- [ ] Test on macOS
-- [ ] Test on Windows
-- [ ] Test on Linux
+## Open Tasks Before Publication
 
-### 6. **Cleanup**
+### 1. 🖥️ Cross-platform Testing
+- [ ] Verify production builds and key functionalities on **macOS**.
+- [ ] Verify production builds and key functionalities on **Windows**.
+- [ ] Verify production builds and key functionalities on **Linux**.
 
-- [ ] Remove/reduce debug logging in production
+### 2. 🧹 Code Cleanup
+- [ ] Review and disable/reduce debug logging and mock options for production releases.
+- [ ] Confirm `mockAnalysis` and `useLocalBackend` default to `false` in production settings initialization.
 
-### 8. **Security**
+### 3. 🔒 Security Audit
+- [ ] Perform a final security review of IPC handlers in `preload.ts` and ensure strict validation on all file paths passed from the renderer.
+- [ ] Validate sandboxing contexts to prevent unauthorized file execution.
 
-- [ ] Final security review of file path validation and sandboxing
-
-### 9. **Optional Polish**
-
-- [ ] Add "About" dialog
-- [ ] Add auto-update capability (e.g. electron-updater)
-- [ ] Add keyboard shortcuts for common actions
+### 4. ✨ Optional Polish & Enhancements
+- [ ] Add an **"About"** dialog in the desktop app UI detailing versions and license.
+- [ ] Add auto-update capabilities (e.g., `electron-updater` or Forge publish configs).
+- [ ] Map standard keyboard shortcuts for common actions (e.g., scan directory, toggle settings).
