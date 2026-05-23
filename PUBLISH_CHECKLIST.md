@@ -12,8 +12,11 @@
 
 For distribution outside the Mac App Store:
 
-- [ ] Set up code signing for macOS
-- [ ] Set up notarization for macOS
+- [x] Set up code signing for macOS
+- [x] Set up notarization for macOS
+
+> [!TIP]
+> Credentials for macOS signing and notarization are securely stored locally in `.env`. The project uses a zero-dependency env-loader in `forge.config.ts` to read them at build-time. For a new machine/setup, copy `.env.example` to `.env` and fill in the values.
 
 ### 4. **Cross-platform Testing**
 

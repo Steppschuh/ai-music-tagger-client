@@ -6,6 +6,28 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import * as fs from 'fs';
+import * as path from 'path';
+
+
+// Simple, zero-dependency .env loader for build time
+const envPath = path.resolve(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  envContent.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    const parts = trimmed.split('=');
+    if (parts.length >= 2) {
+      const key = parts[0].trim();
+      let value = parts.slice(1).join('=').trim();
+      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      process.env[key] = value;
+    }
+  });
+}
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -15,6 +37,24 @@ const config: ForgeConfig = {
     extraResource: [
       'bin/cli.js', // compiled CLI script bundled into resources/
     ],
+    // macOS Code Signing configuration (conditional)
+    ...(process.env.APPLE_SIGNING_IDENTITY ? {
+      osxSign: {
+        identity: process.env.APPLE_SIGNING_IDENTITY,
+        'hardened-runtime': true,
+        entitlements: './assets/entitlements.mac.plist',
+        'entitlements-inherit': './assets/entitlements.mac.inherit.plist',
+        'signature-flags': 'library',
+      },
+    } : {}),
+    // macOS Notarization configuration (conditional)
+    ...(process.env.APPLE_ID && process.env.APPLE_PASSWORD ? {
+      osxNotarize: {
+        appleId: process.env.APPLE_ID,
+        appleIdPassword: process.env.APPLE_PASSWORD,
+        teamId: process.env.APPLE_TEAM_ID || '',
+      },
+    } : {}),
   },
   rebuildConfig: {},
   makers: [
