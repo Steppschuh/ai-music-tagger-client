@@ -6,7 +6,7 @@
 
 - **App Icon** — Add icon assets for macOS, Windows, and Linux and configure `packagerConfig.icon` in `forge.config.ts`
 
-- [ ] Add app icon and configure packagerConfig
+- [x] Add app icon and configure packagerConfig
 
 ### 3. **Code Signing & Notarization (macOS)**
 

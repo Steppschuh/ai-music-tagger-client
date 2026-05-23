@@ -11,6 +11,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     executableName: 'ai-music-tagger',
+    icon: './assets/icon',
     extraResource: [
       'bin/cli.js', // compiled CLI script bundled into resources/
     ],
