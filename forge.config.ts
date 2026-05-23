@@ -38,6 +38,7 @@ const config: ForgeConfig = {
     icon: './assets/icon',
     extraResource: [
       'bin/cli.js', // compiled CLI script bundled into resources/
+      'assets',     // assets folder bundled into resources/
     ],
     // macOS Code Signing configuration (conditional)
     ...(process.env.APPLE_SIGNING_IDENTITY ? {
@@ -55,11 +56,11 @@ const config: ForgeConfig = {
       },
     } : {}),
     // macOS Notarization configuration (conditional)
-    ...(process.env.APPLE_ID && process.env.APPLE_PASSWORD ? {
+    ...(process.env.APPLE_ID && process.env.APPLE_PASSWORD && process.env.APPLE_TEAM_ID ? {
       osxNotarize: {
         appleId: process.env.APPLE_ID,
         appleIdPassword: process.env.APPLE_PASSWORD,
-        teamId: process.env.APPLE_TEAM_ID || '',
+        teamId: process.env.APPLE_TEAM_ID,
       },
     } : {}),
   },

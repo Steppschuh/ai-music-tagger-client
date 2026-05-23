@@ -125,6 +125,7 @@ export async function analyzeSong(
   }
   const maxRetries = 2;
   let attempt = 0;
+  let lastError: Error | null = null;
 
   while (attempt <= maxRetries) {
     let response: Response;
@@ -135,12 +136,12 @@ export async function analyzeSong(
         body: formData,
       });
     } catch (err: any) {
-      if (attempt >= maxRetries) {
-        throw err;
-      }
+      lastError = err;
       attempt++;
       // Wait before retrying (e.g. 2s, 4s)
-      await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+      if (attempt <= maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+      }
       continue;
     }
 
@@ -149,20 +150,23 @@ export async function analyzeSong(
       const errorMsg = `Backend request failed with status ${response.status}${
         body ? `: ${body}` : ""
       }`;
+      lastError = new Error(errorMsg);
       const isRetryable = response.status === 429 || response.status >= 500;
-      if (attempt >= maxRetries || !isRetryable) {
-        throw new Error(errorMsg);
+      if (!isRetryable) {
+        throw lastError; // Client errors (except 429) fail immediately
       }
       attempt++;
       // Wait before retrying (e.g. 2s, 4s)
-      await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+      if (attempt <= maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+      }
       continue;
     }
 
     return await response.json();
   }
 
-  throw new Error("Backend request failed: Maximum retries reached");
+  throw lastError || new Error("Backend request failed: Maximum retries reached");
 }
 
 export interface QuotaInfo {
