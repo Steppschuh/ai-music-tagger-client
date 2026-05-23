@@ -1,30 +1,46 @@
-# AGENTS.md: Project Truth
+# AGENTS.md: Project Truth & Context Rules
 
-## Project Purpose
-AI Music Tagger is a professional-grade desktop application and CLI tool designed for automated music metadata enrichment. It leverages AI to analyze audio files, generating high-fidelity tags, structural phrasing, energy profiles, and DJ-specific metadata (cue points, mixing notes) for advanced library management.
+> [!NOTE]
+> This file is a machine-readable "ground truth" and context booster designed for AI coding assistants (and human developers) working in this repository. AI agents must read and strictly adhere to the stack definitions, patterns, and implementation laws listed below.
 
-## Tech Stack
-- **Core**: Electron (Main Process) + React 18 (Renderer Process)
-- **Languages**: TypeScript (Strict mode enforcement)
-- **Build & Dev**: Vite, Electron Forge, TS-Node (for CLI)
-- **State & Data**: TanStack Query (API state), Electron-Store (Persistence), Zod (Validation)
-- **Styling**: Tailwind CSS, Radix UI / Shadcn UI components
-- **Audio Logic**: `node-id3` (Metadata writing), Sidecar JSON caching
+---
 
-## Architectural Patterns
-- **Service-Oriented Logic**: Core business logic (tagging, analysis, settings) is encapsulated in `src/services/` and shared between the Electron GUI and the CLI.
-- **Context-Isolated IPC Bridge**: All sensitive operations (filesystem, network, dialogs) are restricted to the Main process and exposed to the Renderer via secure IPC handlers in `preload.ts`.
-- **Hybrid Metadata Storage**: Primary tags are written directly to ID3 frames, while full-fidelity AI results are cached in `-analysis.json` sidecar files to prevent data loss and avoid redundant API calls.
-- **Schema-First Analysis**: The system operates on a versioned `AnalysisResult` schema (currently **v20**), defined in `src/shared/types.ts`.
+## 🎯 Project Purpose
+AI Music Tagger is a desktop application and CLI utility designed for automated, high-fidelity music metadata enrichment. It interfaces with an AI audio-analysis backend to generate descriptive tags, genres, moods, tempo/key structures, and DJ-specific metadata (cue points, mixing notes) for advanced library curation.
 
-## Naming Conventions
+---
+
+## 🛠 Tech Stack
+- **Core Process Shell**: Electron (Main Process)
+- **User Interface**: React 18 (Renderer Process)
+- **Languages**: TypeScript (Strict mode enforced)
+- **Build & Development**: Vite, Electron Forge, TS-Node (for CLI execution)
+- **State & Data**: TanStack Query (API caching), Electron-Store (Persistent settings), Zod (Validation)
+- **Styling**: Tailwind CSS (v3), Radix UI / Shadcn UI primitives
+- **Audio Logic**: `node-id3` (ID3 frame writer), Sidecar JSON caching
+
+---
+
+## 🏗 Architectural Patterns
+
+- **Service-Oriented Logic**: Core business logic—such as tag writing, settings configurations, and API communications—is encapsulated in `src/services/` and shared identically between the Electron GUI and the CLI.
+- **Context-Isolated IPC Bridge**: All sensitive system operations (filesystem access, network requests, OS-level dialogs) are restricted to the Main process. The Renderer is restricted from importing `fs` or `path` and must interact through secure IPC handlers declared in `src/preload.ts`.
+- **Hybrid Metadata Storage**: Primary tags are written directly to ID3 frames. The full-fidelity, highly structured AI analysis output is saved as a `-analysis.json` sidecar file alongside the audio to prevent duplicate API requests and preserve historical metadata.
+- **Schema-First Analysis**: The system enforces and operates on the versioned `AnalysisResult` schema (currently **v20**), defined as the single source of truth in `src/shared/types.ts`.
+
+---
+
+## 🏷 Naming Conventions
 - **UI Components**: `PascalCase` (e.g., `SettingsPanel.tsx`, `StatusBar.tsx`).
 - **Services & Utils**: `camelCase` (e.g., `musicTaggerService.ts`, `id3MetadataHelpers.ts`).
 - **Types & Interfaces**: `PascalCase` (e.g., `AnalysisResult`, `SettingsState`).
-- **Filesystem**: `kebab-case` for assets, `camelCase` for source files.
+- **Filesystem**: `kebab-case` for assets and directories, `camelCase` for source files.
 
-## Implementation Laws
-1. **Strict Type Safety**: Never use `any` unless absolutely necessary (e.g., third-party library gaps). Use the shared types in `src/shared/types.ts` as the single source of truth.
-2. **Main-Process Restriction**: Network requests and filesystem writes MUST happen in the Main process. The Renderer should never import `fs` or `path`.
-3. **Dev/Prod Isolation**: Mock analysis modes and developer tools must be guarded by `import.meta.env.DEV` or `app.isPackaged` checks.
-4. **Non-Destructive Tagging**: By default, preserve existing metadata unless the user explicitly selects an "overwrite" or "merge" strategy.
+---
+
+## 📜 Implementation Laws
+
+1. **Strict Type Safety**: Never use `any` unless wrapping third-party libraries that lack complete typing definitions. Use the shared interfaces in `src/shared/types.ts` as the single source of truth.
+2. **Main-Process Restriction**: All network requests and local filesystem writes MUST run in the Main process. The React Renderer is strictly sandboxed.
+3. **Environment Isolation**: Mock analysis modes and local/dev testing routes must be strictly guarded by `import.meta.env.DEV` or `app.isPackaged` checks so they never leak into production builds.
+4. **Non-Destructive Tagging**: By default, preserve existing audio tags unless the user has explicitly selected an "overwrite" or "merge" policy in settings.
