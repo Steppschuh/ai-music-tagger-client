@@ -109,29 +109,29 @@ jobs:
             case "$filename" in
               *.dmg)
                 if [[ "$filepath" == *"arm64"* ]] || [[ "$filename" == *"arm64"* ]]; then
-                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Apple-Silicon.dmg"
+                  new_name="AI-Music-Tagger-${{ github.ref_name }}-macOS-Apple-Silicon.dmg"
                 else
-                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Intel.dmg"
+                  new_name="AI-Music-Tagger-${{ github.ref_name }}-macOS-Intel.dmg"
                 fi
                 ;;
               *.zip)
                 if [[ "$filepath" == *"arm64"* ]] || [[ "$filename" == *"arm64"* ]]; then
-                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Apple-Silicon.zip"
+                  new_name="AI-Music-Tagger-${{ github.ref_name }}-macOS-Apple-Silicon.zip"
                 else
-                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Intel.zip"
+                  new_name="AI-Music-Tagger-${{ github.ref_name }}-macOS-Intel.zip"
                 fi
                 ;;
               *.exe)
-                new_name="AI-Music-Tagger-v${{ github.ref_name }}-Windows-Setup.exe"
+                new_name="AI-Music-Tagger-${{ github.ref_name }}-Windows-Setup.exe"
                 ;;
               *.deb)
-                new_name="AI-Music-Tagger-v${{ github.ref_name }}-Linux-Debian.deb"
+                new_name="AI-Music-Tagger-${{ github.ref_name }}-Linux-Debian.deb"
                 ;;
               *.rpm)
-                new_name="AI-Music-Tagger-v${{ github.ref_name }}-Linux-RedHat.rpm"
+                new_name="AI-Music-Tagger-${{ github.ref_name }}-Linux-RedHat.rpm"
                 ;;
               *)
-                new_name="AI-Music-Tagger-v${{ github.ref_name }}-$filename"
+                new_name="AI-Music-Tagger-${{ github.ref_name }}-$filename"
                 ;;
             esac
             
