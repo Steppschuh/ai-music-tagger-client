@@ -10,6 +10,17 @@ The AI analysis is performed by the [AI Music Tagger API](https://ai-music-tagge
 
 ---
 
+## 📥 Download
+
+Ready-to-use desktop installers for all major platforms can be downloaded directly from the **[Latest GitHub Releases Page](https://github.com/Steppschuh/ai-music-tagger-client/releases/latest)**.
+
+### Which file should I download?
+*   **macOS (Apple Silicon)**: Download the `.dmg` file ending with `-macOS-Apple-Silicon.dmg` (for M1/M2/M3 chip Macs).
+*   **Windows**: Download the `.exe` file ending with `-Windows-Setup.exe` (run it to install the application).
+*   **Linux**: Download the `.deb` file (for Ubuntu/Debian) or `.rpm` file (for Fedora/RedHat).
+
+---
+
 ## 🚀 Features
 
 - **AI-Powered Analysis**: Extracts descriptive metadata (genres, moods, vibes, lyrical themes, ...) and structural/performance details (phrasing type, suitable cue points, and multi-stem audio suitability).
