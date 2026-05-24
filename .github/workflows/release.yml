@@ -57,6 +57,7 @@ jobs:
           name: ai-music-tagger-artifacts-${{ runner.os }}
           path: |
             out/make/**/*.zip
+            out/make/**/*.dmg
             out/make/**/*.exe
             out/make/**/*.deb
             out/make/**/*.rpm
@@ -91,12 +92,59 @@ jobs:
           echo "Cleaning up any existing release for tag ${{ github.ref_name }} to prevent stale assets and double descriptions..."
           gh release delete ${{ github.ref_name }} --yes || true
           
+          echo "Processing and standardizing asset names..."
+          mkdir -p staging-assets
+          
+          find release-artifacts -type f | while read -r filepath; do
+            filename=$(basename "$filepath")
+            extension="${filename##*.}"
+            
+            # Skip Squirrel update packages
+            if [ "$extension" = "nupkg" ]; then
+              echo "Skipping update package: $filename"
+              continue
+            fi
+            
+            # Determine clear, standardized names
+            case "$filename" in
+              *.dmg)
+                if [[ "$filepath" == *"arm64"* ]] || [[ "$filename" == *"arm64"* ]]; then
+                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Apple-Silicon.dmg"
+                else
+                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Intel.dmg"
+                fi
+                ;;
+              *.zip)
+                if [[ "$filepath" == *"arm64"* ]] || [[ "$filename" == *"arm64"* ]]; then
+                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Apple-Silicon.zip"
+                else
+                  new_name="AI-Music-Tagger-v${{ github.ref_name }}-macOS-Intel.zip"
+                fi
+                ;;
+              *.exe)
+                new_name="AI-Music-Tagger-v${{ github.ref_name }}-Windows-Setup.exe"
+                ;;
+              *.deb)
+                new_name="AI-Music-Tagger-v${{ github.ref_name }}-Linux-Debian.deb"
+                ;;
+              *.rpm)
+                new_name="AI-Music-Tagger-v${{ github.ref_name }}-Linux-RedHat.rpm"
+                ;;
+              *)
+                new_name="AI-Music-Tagger-v${{ github.ref_name }}-$filename"
+                ;;
+            esac
+            
+            echo "Standardizing $filename to $new_name"
+            cp "$filepath" "staging-assets/$new_name"
+          done
+          
           echo "Finding files to upload..."
-          mapfile -t files < <(find release-artifacts -type f)
+          mapfile -t files < <(find staging-assets -type f)
           echo "Files to upload:"
           printf '%s\n' "${files[@]}"
           
-          echo "Creating fresh release ${{ github.ref_name }}..."
+          echo "Creating fresh release ${{ github.ref_name }} with clean assets..."
           gh release create ${{ github.ref_name }} \
             --title "Release ${{ github.ref_name }}" \
             --generate-notes \
